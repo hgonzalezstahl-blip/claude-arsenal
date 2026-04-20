@@ -1,0 +1,38 @@
+# Session data and transcripts (private, large)
+projects/
+sessions/
+file-history/
+
+# Caches and temp files
+cache/
+paste-cache/
+image-cache/
+shell-snapshots/
+
+# Sensitive files — NEVER commit these
+.credentials.json
+mcp-needs-auth-cache.json
+settings.local.json
+audit.log
+history.jsonl
+telemetry/
+security_warnings_*.json
+
+# Plugin runtime data (installed separately)
+plugins/cache/
+plugins/data/
+
+# IDE state
+ide/
+
+# Task state (ephemeral)
+tasks/
+
+# Downloads
+downloads/
+
+# Agent memory (project-specific, pushed separately per project)
+agent-memory/
+
+# Backups
+backups/

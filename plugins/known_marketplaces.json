@@ -1,0 +1,26 @@
+{
+  "claude-plugins-official": {
+    "source": {
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    "installLocation": "C:\\Users\\hgonz\\.claude\\plugins\\marketplaces\\claude-plugins-official",
+    "lastUpdated": "2026-04-20T10:53:50.743Z"
+  },
+  "trailofbits": {
+    "source": {
+      "source": "github",
+      "repo": "trailofbits/skills"
+    },
+    "installLocation": "C:\\Users\\hgonz\\.claude\\plugins\\marketplaces\\trailofbits",
+    "lastUpdated": "2026-04-17T13:58:07.484Z"
+  },
+  "compound-engineering-plugin": {
+    "source": {
+      "source": "github",
+      "repo": "EveryInc/compound-engineering-plugin"
+    },
+    "installLocation": "C:\\Users\\hgonz\\.claude\\plugins\\marketplaces\\compound-engineering-plugin",
+    "lastUpdated": "2026-04-17T13:58:21.119Z"
+  }
+}
