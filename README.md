@@ -16,6 +16,36 @@ Built by [Hector Gonzalez-Stahl](https://github.com/hgonzalezstahl-blip)
 
 ---
 
+## What's New
+
+### v2 — April 20, 2026
+
+| Change | Details |
+|:-------|:--------|
+| **Live Session Dashboard** | Real-time multi-session monitor at `localhost:3333` — track tokens, costs, context window, tool calls, and agent invocations across all active sessions with one-click switching |
+| **Vault Team** (4 new agents) | `vault`, `vault-modeler`, `vault-analyst`, `vault-auditor` — financial modeling, market sizing, pricing strategy, and audit with 3-scenario analysis |
+| **Scout Agent** | Competitive intelligence and market research — monitors competitors, analyzes trends, evaluates technologies, produces structured intel briefs |
+| **Spark-Closer Agent** | Sales specialist — proposals, pitch decks, cold outreach sequences, objection handling, and deal analysis |
+| **6 Lifecycle Hooks** (was 4) | Added SessionStart dashboard auto-launch, TDD enforcement warnings, and prompt injection detection on file reads |
+| **Context Window Fix** | Dashboard now shows actual context fill (last message), not cumulative tokens |
+| **39 Agents** (was 33) | 5 teams: Rex (17), Luna (6), Spark (7), Vault (4), General (5) |
+
+### v1 — April 17, 2026
+
+| Change | Details |
+|:-------|:--------|
+| **Rex Team** (17 agents) | Full engineering lifecycle — build, review, red-team, test, performance audit, deploy |
+| **Luna Redesign** | Dynamic Persona Factory generates 2-4 custom personas per evaluation (no fixed roster) |
+| **Rex-RedTeam** | 74 attack techniques across 7 categories, aligned with OWASP LLM/Agentic Top 10 |
+| **Spark Team** (6 agents) | Full-service marketing agency — strategy, content, design, analytics, curation |
+| **22 Plugins** | 13 Trail of Bits security, 8 Anthropic official, 1 community |
+| **Path-Scoped Rules** | Auto-loading conventions for NestJS, React, Prisma, Rekaliber |
+| **Knowledge Vault** | 3-tier RAG architecture (L1 always-loaded, L2 on-demand, L3 deep reference) |
+| **Copilot Framework** | 8 skills ported to GitHub Copilot |
+| **Persistent Agent Memory** | All agents have `memory: user` for cross-session learning |
+
+---
+
 ## Quick Start
 
 ```bash
