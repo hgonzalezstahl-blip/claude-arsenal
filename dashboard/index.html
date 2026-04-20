@@ -3,23 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Code — Session Dashboard</title>
+<title>Claude Code — Session Monitor</title>
 <style>
   :root {
     --bg: #0a0a0f;
     --surface: #12121a;
     --surface2: #1a1a28;
+    --surface3: #222236;
     --border: #2a2a3a;
+    --border-active: #7c6aef;
     --text: #e0e0f0;
     --text-dim: #8888aa;
+    --text-muted: #555570;
     --accent: #7c6aef;
-    --accent-glow: rgba(124, 106, 239, 0.3);
+    --accent-glow: rgba(124, 106, 239, 0.15);
     --green: #34d399;
     --yellow: #fbbf24;
     --red: #f87171;
     --orange: #fb923c;
     --blue: #60a5fa;
     --cyan: #22d3ee;
+    --pink: #f472b6;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,105 +33,177 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    overflow-x: hidden;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    height: 100vh;
   }
 
   .header {
-    padding: 16px 24px;
+    grid-column: 1 / -1;
+    padding: 12px 20px;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--surface);
   }
-
-  .header h1 { font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
-
-  .header .status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); }
-
+  .header h1 {
+    font-size: 13px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .header .status { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-dim); }
   .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
+    width: 7px; height: 7px; border-radius: 50%;
     background: var(--green); animation: pulse 2s infinite;
   }
-
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  .alerts-bar { padding: 0; max-height: 0; overflow: hidden; transition: all 0.3s ease; }
-  .alerts-bar.active { padding: 8px 24px; max-height: 200px; }
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-header {
+    padding: 12px 16px 8px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-dim); border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .session-count {
+    background: var(--surface2); padding: 1px 7px; border-radius: 8px;
+    font-size: 10px; color: var(--text);
+  }
+  .session-list { flex: 1; overflow-y: auto; padding: 4px 0; }
 
+  .session-item {
+    padding: 10px 16px; cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.15s ease;
+  }
+  .session-item:hover { background: var(--surface2); }
+  .session-item.active {
+    background: var(--accent-glow);
+    border-left-color: var(--accent);
+  }
+  .session-item .project-name {
+    font-size: 12px; font-weight: 600; color: var(--text);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .session-item .live-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+  .session-item .session-meta {
+    display: flex; gap: 10px; margin-top: 4px;
+    font-size: 10px; color: var(--text-dim);
+  }
+  .session-item .session-meta .cost { color: var(--green); font-weight: 600; }
+  .session-item .session-meta .ctx { font-weight: 600; }
+  .session-item .session-id {
+    font-size: 9px; color: var(--text-muted); margin-top: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .session-item .alert-badge {
+    display: inline-block; background: var(--red); color: #fff;
+    font-size: 9px; padding: 0 5px; border-radius: 6px; margin-left: 6px;
+    font-weight: 700;
+  }
+
+  .main {
+    overflow-y: auto;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .alerts-bar { display: flex; flex-direction: column; gap: 4px; }
+  .alerts-bar:empty { display: none; }
   .alert {
-    padding: 8px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 4px;
+    padding: 8px 12px; border-radius: 6px; font-size: 11px;
     display: flex; align-items: center; gap: 8px;
   }
-  .alert.warning { background: rgba(251, 191, 36, 0.15); border-left: 3px solid var(--yellow); }
-  .alert.critical { background: rgba(248, 113, 113, 0.15); border-left: 3px solid var(--red); animation: flash 1s infinite; }
-
+  .alert.warning { background: rgba(251, 191, 36, 0.12); border-left: 3px solid var(--yellow); }
+  .alert.critical { background: rgba(248, 113, 113, 0.12); border-left: 3px solid var(--red); animation: flash 1s infinite; }
   @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 20px 24px; }
-
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   .card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px;
+    border-radius: 8px; padding: 14px;
   }
-  .card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 6px; }
-  .card-value { font-size: 28px; font-weight: 700; line-height: 1.1; }
-  .card-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
-
-  .progress-bar { height: 6px; background: var(--surface2); border-radius: 3px; margin-top: 10px; overflow: hidden; }
+  .card-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 4px; }
+  .card-value { font-size: 26px; font-weight: 700; line-height: 1.1; }
+  .card-sub { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+  .progress-bar { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 8px; overflow: hidden; }
   .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease, background 0.3s ease; }
 
-  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 24px 24px; }
-
+  .panels-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .panel {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px;
+    border-radius: 8px; padding: 14px;
   }
   .panel-title {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--text-dim); margin-bottom: 12px; padding-bottom: 8px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-dim); margin-bottom: 10px; padding-bottom: 6px;
     border-bottom: 1px solid var(--border);
   }
 
-  .bar-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 12px; }
-  .bar-label { width: 120px; flex-shrink: 0; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bar-track { flex: 1; height: 18px; background: var(--surface2); border-radius: 4px; overflow: hidden; margin: 0 8px; }
-  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; min-width: 2px; }
-  .bar-count { width: 40px; text-align: right; color: var(--text); font-weight: 600; font-size: 11px; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 5px; font-size: 11px; }
+  .bar-label { width: 110px; flex-shrink: 0; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 16px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin: 0 8px; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; min-width: 2px; }
+  .bar-count { width: 36px; text-align: right; color: var(--text); font-weight: 600; font-size: 10px; }
 
   .agent-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+    padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 11px;
   }
   .agent-row:last-child { border-bottom: none; }
   .agent-name { color: var(--cyan); font-weight: 600; }
-  .agent-count { background: var(--surface2); padding: 2px 8px; border-radius: 10px; font-size: 11px; color: var(--text); }
-  .agent-desc { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+  .agent-count { background: var(--surface2); padding: 1px 7px; border-radius: 8px; font-size: 10px; }
+  .agent-desc { font-size: 9px; color: var(--text-dim); margin-top: 1px; }
 
-  .token-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .token-item { background: var(--surface2); border-radius: 6px; padding: 10px; }
-  .token-item .label { font-size: 10px; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
-  .token-item .value { font-size: 18px; font-weight: 700; margin-top: 2px; }
-  .token-item .cost { font-size: 10px; color: var(--text-dim); }
+  .token-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .token-item { background: var(--surface2); border-radius: 5px; padding: 8px; }
+  .token-item .label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
+  .token-item .value { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .token-item .cost { font-size: 9px; color: var(--text-dim); }
 
-  .gauge-container { display: flex; align-items: center; justify-content: center; padding: 10px 0; }
-  .gauge { width: 160px; height: 160px; position: relative; }
+  .gauge-container { display: flex; align-items: center; justify-content: center; padding: 8px 0; }
+  .gauge { width: 140px; height: 140px; position: relative; }
   .gauge svg { transform: rotate(-90deg); }
   .gauge-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .gauge-percent { font-size: 32px; font-weight: 700; }
-  .gauge-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+  .gauge-percent { font-size: 28px; font-weight: 700; }
+  .gauge-label { font-size: 9px; color: var(--text-dim); text-transform: uppercase; }
 
   .footer {
-    padding: 8px 24px; border-top: 1px solid var(--border);
-    font-size: 10px; color: var(--text-dim);
+    padding: 6px 20px; border-top: 1px solid var(--border);
+    font-size: 9px; color: var(--text-dim);
     display: flex; justify-content: space-between;
+    grid-column: 1 / -1;
   }
+
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; color: var(--text-dim); gap: 8px;
+  }
+  .empty-state .icon { font-size: 32px; opacity: 0.3; }
+  .empty-state .msg { font-size: 12px; }
 
   .color-accent { color: var(--accent); }
   .color-green { color: var(--green); }
   .color-yellow { color: var(--yellow); }
   .color-red { color: var(--red); }
   .color-blue { color: var(--blue); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -140,63 +216,78 @@
   </div>
 </div>
 
-<div class="alerts-bar" id="alertsBar"></div>
-
-<div class="grid">
-  <div class="card">
-    <div class="card-label">Total Tokens</div>
-    <div class="card-value color-accent" id="totalTokens">0</div>
-    <div class="card-sub" id="tokenBreakdown">0 in / 0 out</div>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <span>Sessions</span>
+    <span class="session-count" id="sessionCount">0</span>
   </div>
-  <div class="card">
-    <div class="card-label">Estimated Cost</div>
-    <div class="card-value color-green" id="totalCost">$0.00</div>
-    <div class="card-sub" id="costRate">$0.00/min</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Context Window</div>
-    <div class="card-value" id="contextPercent">0%</div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="contextBar" style="width:0%;background:var(--green)"></div>
-    </div>
-    <div class="card-sub" id="contextDetail">0 / 1M tokens</div>
-  </div>
-  <div class="card">
-    <div class="card-label">Messages</div>
-    <div class="card-value color-blue" id="messageCount">0</div>
-    <div class="card-sub" id="sessionDuration">0m elapsed</div>
-  </div>
+  <div class="session-list" id="sessionList"></div>
 </div>
 
-<div class="main-grid">
-  <div class="panel">
-    <div class="panel-title">Tool Calls by Type</div>
-    <div id="toolBars"></div>
+<div class="main" id="mainContent">
+  <div class="empty-state" id="emptyState">
+    <div class="icon">&#9678;</div>
+    <div class="msg">No active sessions found</div>
+    <div class="msg" style="font-size:10px">Start a Claude Code session to begin monitoring</div>
   </div>
 
-  <div class="panel">
-    <div class="panel-title">Agent Invocations</div>
-    <div id="agentList"></div>
-  </div>
+  <div id="dashboardContent" style="display:none">
+    <div class="alerts-bar" id="alertsBar"></div>
 
-  <div class="panel">
-    <div class="panel-title">Token Breakdown</div>
-    <div class="token-grid" id="tokenGrid"></div>
-  </div>
+    <div class="stats-grid">
+      <div class="card">
+        <div class="card-label">Total Tokens</div>
+        <div class="card-value color-accent" id="totalTokens">0</div>
+        <div class="card-sub" id="tokenBreakdown">0 in / 0 out</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Estimated Cost</div>
+        <div class="card-value color-green" id="totalCost">$0.00</div>
+        <div class="card-sub" id="costRate">$0.00/min</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Context Window</div>
+        <div class="card-value" id="contextPercent">0%</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="contextBar" style="width:0%;background:var(--green)"></div>
+        </div>
+        <div class="card-sub" id="contextDetail">0 / 1M tokens</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Messages</div>
+        <div class="card-value color-blue" id="messageCount">0</div>
+        <div class="card-sub" id="sessionDuration">0m elapsed</div>
+      </div>
+    </div>
 
-  <div class="panel">
-    <div class="panel-title">Context Window Gauge</div>
-    <div class="gauge-container">
-      <div class="gauge">
-        <svg width="160" height="160" viewBox="0 0 160 160">
-          <circle cx="80" cy="80" r="70" fill="none" stroke="var(--surface2)" stroke-width="12"/>
-          <circle cx="80" cy="80" r="70" fill="none" stroke="var(--green)" stroke-width="12"
-                  stroke-dasharray="440" stroke-dashoffset="440" stroke-linecap="round"
-                  id="gaugeArc"/>
-        </svg>
-        <div class="gauge-text">
-          <div class="gauge-percent" id="gaugePercent">0%</div>
-          <div class="gauge-label">of 1M limit</div>
+    <div class="panels-grid">
+      <div class="panel">
+        <div class="panel-title">Tool Calls by Type</div>
+        <div id="toolBars"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Agent Invocations</div>
+        <div id="agentList"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Token Breakdown</div>
+        <div class="token-grid" id="tokenGrid"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Context Window Gauge</div>
+        <div class="gauge-container">
+          <div class="gauge">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="60" fill="none" stroke="var(--surface2)" stroke-width="10"/>
+              <circle cx="70" cy="70" r="60" fill="none" stroke="var(--green)" stroke-width="10"
+                      stroke-dasharray="377" stroke-dashoffset="377" stroke-linecap="round"
+                      id="gaugeArc"/>
+            </svg>
+            <div class="gauge-text">
+              <div class="gauge-percent" id="gaugePercent">0%</div>
+              <div class="gauge-label">of 1M limit</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -212,8 +303,13 @@
 const TOOL_COLORS = {
   Agent: '#22d3ee', Read: '#60a5fa', Edit: '#fbbf24', Write: '#fb923c',
   Bash: '#f87171', Grep: '#34d399', Glob: '#7c6aef', Skill: '#a78bfa',
-  TaskCreate: '#f472b6', TaskUpdate: '#f472b6', WebFetch: '#2dd4bf', WebSearch: '#2dd4bf',
+  TaskCreate: '#f472b6', TaskUpdate: '#f472b6', TaskGet: '#f472b6',
+  WebFetch: '#2dd4bf', WebSearch: '#2dd4bf', ToolSearch: '#8b5cf6',
 };
+
+let currentSessionId = null;
+let eventSource = null;
+let sessions = [];
 
 function formatNum(n) {
   if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
@@ -228,115 +324,147 @@ function getContextColor(pct) {
   return 'var(--green)';
 }
 
-function escapeText(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.textContent;
+function timeAgo(ts) {
+  if (!ts) return '--';
+  var diff = Date.now() - new Date(ts).getTime();
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+  if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+  return Math.floor(diff / 86400000) + 'd ago';
 }
 
-let sessionStart = null;
-
-function buildToolBars(toolCalls) {
-  const container = document.getElementById('toolBars');
-  container.replaceChildren();
-  const entries = Object.entries(toolCalls).sort((a, b) => b[1] - a[1]);
-  const max = entries[0] ? entries[0][1] : 1;
-  for (const [name, count] of entries) {
-    const pct = (count / max) * 100;
-    const color = TOOL_COLORS[name] || 'var(--text-dim)';
-
-    const row = document.createElement('div');
-    row.className = 'bar-row';
-
-    const label = document.createElement('span');
-    label.className = 'bar-label';
-    label.textContent = name;
-
-    const track = document.createElement('div');
-    track.className = 'bar-track';
-    const fill = document.createElement('div');
-    fill.className = 'bar-fill';
-    fill.style.width = pct + '%';
-    fill.style.background = color;
-    track.appendChild(fill);
-
-    const cnt = document.createElement('span');
-    cnt.className = 'bar-count';
-    cnt.textContent = count;
-
-    row.append(label, track, cnt);
-    container.appendChild(row);
+function el(tag, attrs, children) {
+  var node = document.createElement(tag);
+  if (attrs) {
+    for (var k in attrs) {
+      if (k === 'style' && typeof attrs[k] === 'object') {
+        for (var s in attrs[k]) node.style[s] = attrs[k][s];
+      } else if (k === 'className') {
+        node.className = attrs[k];
+      } else if (k === 'onclick') {
+        node.onclick = attrs[k];
+      } else {
+        node.setAttribute(k, attrs[k]);
+      }
+    }
   }
+  if (children) {
+    if (!Array.isArray(children)) children = [children];
+    for (var i = 0; i < children.length; i++) {
+      var c = children[i];
+      if (typeof c === 'string') node.appendChild(document.createTextNode(c));
+      else if (c) node.appendChild(c);
+    }
+  }
+  return node;
 }
 
-function buildAgentList(agentCalls) {
-  const container = document.getElementById('agentList');
+// --- Session List ---
+
+function renderSessionList(list) {
+  sessions = list;
+  var container = document.getElementById('sessionList');
+  document.getElementById('sessionCount').textContent = list.length;
   container.replaceChildren();
-  const entries = Object.entries(agentCalls).sort((a, b) => b[1].count - a[1].count);
-  if (entries.length === 0) {
-    const p = document.createElement('div');
-    p.style.cssText = 'color:var(--text-dim);font-size:12px;padding:20px;text-align:center';
-    p.textContent = 'No agents spawned yet';
-    container.appendChild(p);
+
+  if (list.length === 0) {
+    document.getElementById('emptyState').style.display = '';
+    document.getElementById('dashboardContent').style.display = 'none';
     return;
   }
-  for (const [type, data] of entries) {
-    const row = document.createElement('div');
-    row.className = 'agent-row';
 
-    const left = document.createElement('div');
-    const nameEl = document.createElement('div');
-    nameEl.className = 'agent-name';
-    nameEl.textContent = type;
-    const descEl = document.createElement('div');
-    descEl.className = 'agent-desc';
-    descEl.textContent = data.descriptions[data.descriptions.length - 1] || '';
-    left.append(nameEl, descEl);
+  for (var i = 0; i < list.length; i++) {
+    (function(s) {
+      var isLive = s.lastActivity && (Date.now() - new Date(s.lastActivity).getTime() < 30000);
+      var dotColor = isLive ? 'var(--green)' : 'var(--text-muted)';
 
-    const badge = document.createElement('span');
-    badge.className = 'agent-count';
-    badge.textContent = data.count + 'x';
+      var dot = el('span', { className: 'live-dot', style: { background: dotColor } });
+      if (isLive) dot.style.animation = 'pulse 2s infinite';
 
-    row.append(left, badge);
-    container.appendChild(row);
+      var nameRow = el('div', { className: 'project-name' }, [dot, s.projectName]);
+      if (s.hasAlerts) {
+        nameRow.appendChild(el('span', { className: 'alert-badge' }, '!'));
+      }
+
+      var costEl = el('span', { className: 'cost' }, '$' + s.estimatedCostUSD.toFixed(2));
+      var ctxEl = el('span', { className: 'ctx' }, s.contextWindowPercent.toFixed(0) + '% ctx');
+      ctxEl.style.color = getContextColor(s.contextWindowPercent);
+      var msgsEl = el('span', null, s.messageCount + ' msgs');
+      var agoEl = el('span', null, timeAgo(s.lastActivity));
+
+      var meta = el('div', { className: 'session-meta' }, [costEl, ctxEl, msgsEl, agoEl]);
+      var idEl = el('div', { className: 'session-id' }, s.id.substring(0, 8) + '...');
+
+      var item = el('div', {
+        className: 'session-item' + (s.id === currentSessionId ? ' active' : ''),
+        onclick: function() { switchSession(s.id); }
+      }, [nameRow, meta, idEl]);
+
+      container.appendChild(item);
+    })(list[i]);
+  }
+
+  if (!currentSessionId && list.length > 0) {
+    switchSession(list[0].id);
   }
 }
 
-function buildTokenGrid(stats) {
-  const container = document.getElementById('tokenGrid');
-  container.replaceChildren();
-  const items = [
-    { label: 'Input', value: stats.totalInputTokens, rate: 15, color: 'var(--blue)' },
-    { label: 'Output', value: stats.totalOutputTokens, rate: 75, color: 'var(--orange)' },
-    { label: 'Cache Read', value: stats.totalCacheReadTokens, rate: 1.5, color: 'var(--green)' },
-    { label: 'Cache Write', value: stats.totalCacheWriteTokens, rate: 18.75, color: 'var(--accent)' },
-  ];
-  for (const t of items) {
-    const item = document.createElement('div');
-    item.className = 'token-item';
+// --- Session Switching ---
 
-    const lbl = document.createElement('div');
-    lbl.className = 'label';
-    lbl.textContent = t.label;
+function switchSession(id) {
+  if (id === currentSessionId) return;
+  currentSessionId = id;
 
-    const val = document.createElement('div');
-    val.className = 'value';
-    val.style.color = t.color;
-    val.textContent = formatNum(t.value);
-
-    const cost = document.createElement('div');
-    cost.className = 'cost';
-    cost.textContent = '$' + ((t.value / 1000000) * t.rate).toFixed(4) + ' @ $' + t.rate + '/M';
-
-    item.append(lbl, val, cost);
-    container.appendChild(item);
+  var items = document.querySelectorAll('.session-item');
+  for (var i = 0; i < items.length; i++) {
+    items[i].className = 'session-item' + (sessions[i] && sessions[i].id === id ? ' active' : '');
   }
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('dashboardContent').style.display = '';
+
+  connectSSE(id);
+
+  fetch('/api/stats?session=' + id)
+    .then(function(r) { return r.json(); })
+    .then(renderStats)
+    .catch(function() {});
 }
 
-function render(stats) {
-  if (stats.sessionStart && !sessionStart) sessionStart = stats.sessionStart;
+function connectSSE(sessionId) {
+  if (eventSource) eventSource.close();
 
-  const totalTok = stats.totalInputTokens + stats.totalOutputTokens +
+  var url = sessionId ? '/events?session=' + sessionId : '/events';
+  eventSource = new EventSource(url);
+
+  eventSource.addEventListener('stats', function(e) {
+    try {
+      var stats = JSON.parse(e.data);
+      if (stats.id === currentSessionId) renderStats(stats);
+    } catch (err) {}
+  });
+
+  eventSource.addEventListener('sessions', function(e) {
+    try { renderSessionList(JSON.parse(e.data)); } catch (err) {}
+  });
+
+  eventSource.onopen = function() {
+    document.getElementById('statusDot').style.background = 'var(--green)';
+    document.getElementById('statusText').textContent = 'Live';
+  };
+
+  eventSource.onerror = function() {
+    document.getElementById('statusDot').style.background = 'var(--red)';
+    document.getElementById('statusText').textContent = 'Reconnecting...';
+    eventSource.close();
+    setTimeout(function() { connectSSE(currentSessionId); }, 3000);
+  };
+}
+
+// --- Render Stats ---
+
+function renderStats(stats) {
+  var totalTok = stats.totalInputTokens + stats.totalOutputTokens +
     stats.totalCacheReadTokens + stats.totalCacheWriteTokens;
   document.getElementById('totalTokens').textContent = formatNum(totalTok);
   document.getElementById('tokenBreakdown').textContent =
@@ -344,84 +472,128 @@ function render(stats) {
 
   document.getElementById('totalCost').textContent = '$' + stats.estimatedCostUSD.toFixed(2);
 
-  if (sessionStart) {
-    const elapsed = (Date.now() - sessionStart) / 60000;
+  if (stats.sessionStart) {
+    var elapsed = (Date.now() - new Date(stats.sessionStart).getTime()) / 60000;
     if (elapsed > 0.5) {
       document.getElementById('costRate').textContent =
         '$' + (stats.estimatedCostUSD / elapsed).toFixed(3) + '/min';
     }
   }
 
-  const pct = stats.contextWindowPercent;
+  var pct = stats.contextWindowPercent;
   document.getElementById('contextPercent').textContent = pct.toFixed(1) + '%';
   document.getElementById('contextPercent').className = 'card-value ' +
     (pct > 80 ? 'color-red' : pct > 60 ? 'color-yellow' : 'color-green');
-  const bar = document.getElementById('contextBar');
+  var bar = document.getElementById('contextBar');
   bar.style.width = Math.min(100, pct) + '%';
   bar.style.background = getContextColor(pct);
   document.getElementById('contextDetail').textContent =
     formatNum(stats.contextWindowUsed) + ' / 1M tokens';
 
   document.getElementById('messageCount').textContent = stats.messageCount;
-  if (sessionStart) {
-    const mins = Math.floor((Date.now() - sessionStart) / 60000);
+  if (stats.sessionStart) {
+    var mins = Math.floor((Date.now() - new Date(stats.sessionStart).getTime()) / 60000);
     document.getElementById('sessionDuration').textContent =
-      mins > 60 ? Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm elapsed' : mins + 'm elapsed';
+      mins > 60 ? Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm' : mins + 'm elapsed';
   }
 
   // Alerts
-  const alertsBar = document.getElementById('alertsBar');
+  var alertsBar = document.getElementById('alertsBar');
   alertsBar.replaceChildren();
-  if (stats.alerts.length > 0) {
-    alertsBar.className = 'alerts-bar active';
-    for (const a of stats.alerts) {
-      const div = document.createElement('div');
-      div.className = 'alert ' + a.level;
-      div.textContent = (a.level === 'critical' ? '!!! ' : '! ') + a.msg;
-      alertsBar.appendChild(div);
-    }
-  } else {
-    alertsBar.className = 'alerts-bar';
+  var alerts = stats.alerts || [];
+  for (var i = 0; i < alerts.length; i++) {
+    var a = alerts[i];
+    alertsBar.appendChild(el('div', { className: 'alert ' + a.level },
+      (a.level === 'critical' ? '!!! ' : '! ') + a.msg));
   }
 
-  buildToolBars(stats.toolCalls);
-  buildAgentList(stats.agentCalls);
+  buildToolBars(stats.toolCalls || {});
+  buildAgentList(stats.agentCalls || {});
   buildTokenGrid(stats);
 
-  // Gauge
-  const gaugeArc = document.getElementById('gaugeArc');
-  const gaugePct = Math.min(100, pct);
-  const offset = 440 - (440 * gaugePct / 100);
+  // Gauge (circumference = 2 * pi * 60 = ~377)
+  var gaugeArc = document.getElementById('gaugeArc');
+  var gaugePct = Math.min(100, pct);
+  var offset = 377 - (377 * gaugePct / 100);
   gaugeArc.setAttribute('stroke-dashoffset', offset);
   gaugeArc.setAttribute('stroke', getContextColor(pct));
   document.getElementById('gaugePercent').textContent = pct.toFixed(1) + '%';
 
   // Footer
   if (stats.sessionFile) {
-    const parts = stats.sessionFile.replace(/\\/g, '/').split('/');
-    document.getElementById('sessionFile').textContent = parts.slice(-2).join('/');
+    var parts = stats.sessionFile.replace(/\\/g, '/').split('/');
+    document.getElementById('sessionFile').textContent =
+      (stats.projectName || parts.slice(-2, -1)[0]) + ' / ' + parts.slice(-1)[0].substring(0, 8) + '...';
   }
   document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
 }
 
-function connect() {
-  const es = new EventSource('/events');
-  es.onmessage = function(e) {
-    try {
-      render(JSON.parse(e.data));
-      document.getElementById('statusDot').style.background = 'var(--green)';
-      document.getElementById('statusText').textContent = 'Live';
-    } catch (err) {}
-  };
-  es.onerror = function() {
-    document.getElementById('statusDot').style.background = 'var(--red)';
-    document.getElementById('statusText').textContent = 'Reconnecting...';
-    es.close();
-    setTimeout(connect, 3000);
-  };
+function buildToolBars(toolCalls) {
+  var container = document.getElementById('toolBars');
+  container.replaceChildren();
+  var entries = Object.entries(toolCalls).sort(function(a, b) { return b[1] - a[1]; });
+  if (entries.length === 0) {
+    var p = el('div', { style: { color: 'var(--text-dim)', fontSize: '11px', padding: '16px', textAlign: 'center' } }, 'No tool calls yet');
+    container.appendChild(p);
+    return;
+  }
+  var max = entries[0][1];
+  for (var i = 0; i < entries.length; i++) {
+    var name = entries[i][0], count = entries[i][1];
+    var pctW = (count / max) * 100;
+    var color = TOOL_COLORS[name] || 'var(--text-dim)';
+
+    var label = el('span', { className: 'bar-label' }, name);
+    var fill = el('div', { className: 'bar-fill' });
+    fill.style.width = pctW + '%';
+    fill.style.background = color;
+    var track = el('div', { className: 'bar-track' }, fill);
+    var cnt = el('span', { className: 'bar-count' }, String(count));
+
+    container.appendChild(el('div', { className: 'bar-row' }, [label, track, cnt]));
+  }
 }
 
-connect();
+function buildAgentList(agentCalls) {
+  var container = document.getElementById('agentList');
+  container.replaceChildren();
+  var entries = Object.entries(agentCalls).sort(function(a, b) { return b[1].count - a[1].count; });
+  if (entries.length === 0) {
+    container.appendChild(el('div', { style: { color: 'var(--text-dim)', fontSize: '11px', padding: '16px', textAlign: 'center' } }, 'No agents spawned yet'));
+    return;
+  }
+  for (var i = 0; i < entries.length; i++) {
+    var type = entries[i][0], data = entries[i][1];
+    var lastDesc = data.descriptions[data.descriptions.length - 1] || '';
+    var nameEl = el('div', { className: 'agent-name' }, type);
+    var descEl = el('div', { className: 'agent-desc' }, lastDesc);
+    var left = el('div', null, [nameEl, descEl]);
+    var badge = el('span', { className: 'agent-count' }, data.count + 'x');
+    container.appendChild(el('div', { className: 'agent-row' }, [left, badge]));
+  }
+}
+
+function buildTokenGrid(stats) {
+  var container = document.getElementById('tokenGrid');
+  container.replaceChildren();
+  var items = [
+    { label: 'Input', value: stats.totalInputTokens, rate: 15, color: 'var(--blue)' },
+    { label: 'Output', value: stats.totalOutputTokens, rate: 75, color: 'var(--orange)' },
+    { label: 'Cache Read', value: stats.totalCacheReadTokens, rate: 1.5, color: 'var(--green)' },
+    { label: 'Cache Write', value: stats.totalCacheWriteTokens, rate: 18.75, color: 'var(--accent)' },
+  ];
+  for (var i = 0; i < items.length; i++) {
+    var t = items[i];
+    var lbl = el('div', { className: 'label' }, t.label);
+    var val = el('div', { className: 'value' }, formatNum(t.value));
+    val.style.color = t.color;
+    var cost = el('div', { className: 'cost' }, '$' + ((t.value / 1000000) * t.rate).toFixed(4) + ' @ $' + t.rate + '/M');
+    container.appendChild(el('div', { className: 'token-item' }, [lbl, val, cost]));
+  }
+}
+
+// --- Init ---
+connectSSE(null);
 </script>
 </body>
 </html>
