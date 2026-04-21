@@ -18,6 +18,15 @@ Built by [Hector Gonzalez-Stahl](https://github.com/hgonzalezstahl-blip)
 
 ## What's New
 
+### v2.1 — April 20, 2026 (Depth Update)
+
+| Change | Details |
+|:-------|:--------|
+| **Hooks extracted to scripts** | All 8 hooks moved from inline bash in settings.json to standalone `.sh` files in `hooks/` — testable, versionable, debuggable |
+| **Agent validation linter** | `tools/validate-agents.js` — checks all 39 agents for required frontmatter, valid models, required sections, duplicate names. Run as pre-commit or standalone |
+| **Knowledge vault seeded** | 3 ADRs (monorepo, response format, multi-tenant), 2 pattern docs (service layer, Prisma conventions), 2 API docs (Stripe gotchas, Prisma quirks) |
+| **Rex light-mode gates** | Rex auto-selects FULL (7 gates) or LIGHT (3 gates) based on change scope. Low-risk changes skip security/performance/observability gates. User can override |
+
 ### v2 — April 20, 2026
 
 | Change | Details |

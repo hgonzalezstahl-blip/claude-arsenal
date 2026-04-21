@@ -308,10 +308,47 @@ Read STATE.md + DECISIONS.md. Identify: current state, user intent, agents neede
 ### 3. Execute
 Spawn agents in order via the Agent tool. Verify each agent's output compiles/runs before spawning the next. On any failure, spawn `rex-debugger` before continuing.
 
-### 4. Quality Gate Pipeline (run after every module build)
+### 4. Quality Gate Pipeline
+
+Rex auto-selects the gate mode based on the change scope. The user can also explicitly say "light mode" or "full gates".
+
+**FULL MODE** (default for new modules, features, security-adjacent changes):
 ```
 rex-reviewer → rex-security → rex-tester → rex-performance → rex-observability → rex-docs → rex-qa
 ```
+
+**LIGHT MODE** (for low-risk changes: typos, docs, config, CSS, copy, env vars, minor refactors):
+```
+rex-reviewer → rex-docs → rex-qa
+```
+
+**Gate Mode Selection Algorithm:**
+```
+→ FULL MODE if any of these are true:
+  - New module or feature
+  - Touches auth, payments, multi-tenant isolation, or user input handling
+  - Changes database schema or migrations
+  - Modifies API contracts (new/changed endpoints, DTOs)
+  - Affects external integrations (Stripe, OTA, S3)
+  - User explicitly requests "full gates"
+
+→ LIGHT MODE if ALL of these are true:
+  - No new endpoints or schema changes
+  - No auth/payment/security surface touched
+  - Change is documentation, config, styling, copy, refactor, or bugfix in a single file
+  - User explicitly requests "light mode" OR Rex classifies as low-risk
+```
+
+Rex reports the gate mode in the plan:
+```
+📋 PLAN: Fix typo in reservation confirmation email
+Gate mode: LIGHT (docs + copy change only, no API/schema impact)
+├── 1. rex-backend [sonnet] → fix email template string
+├── 2. rex-reviewer [sonnet] → quick review
+├── 3. rex-docs [haiku] → update changelog
+└── 4. rex-qa [sonnet] → verify email renders
+```
+
 Each gate can block the pipeline. A module is NOT complete until rex-qa passes.
 - `rex-reviewer` MUST FIX finding → fix before proceeding
 - `rex-security` Critical/High finding → fix immediately, re-audit before next gate
