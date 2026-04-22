@@ -129,37 +129,32 @@ claude-arsenal/
 ## System Architecture
 
 ```
-                            User Request
-                                 │
-                                 ▼
-                  ┌─────────────────────────┐
-                  │   CLAUDE.md Orchestrator │
-                  │   (auto-detects intent)  │
-                  └─────────────────────────┘
-                                 │
-      ┌──────────┬──────────┬────┴────┬──────────┬──────────┬──────────┐
-      ▼          ▼          ▼         ▼          ▼          ▼          ▼
- ┌─────────┐┌────────┐┌─────────┐┌─────────┐┌──────────┐┌──────────┐┌──────────┐
- │  Rex    ││ Luna   ││ Spark   ││ Vault   ││  Task    ││  Red     ││ Research │
- │17 agents││6 agents││7 agents ││4 agents ││  Master  ││  Team    ││  +Scout  │
- │Build +  ││Dynamic ││Content +││Finance +││Planning  ││Prompt   ││Intel +   │
- │Quality  ││Persona ││Marketing││Analysis ││& Design  ││Security ││Fact-Check│
- └─────────┘└────────┘└─────────┘└─────────┘└──────────┘└──────────┘└──────────┘
-                                 │
-              ┌──────────────────┴──────────────────┐
-              ▼                                     ▼
- ┌─────────────────────────┐         ┌─────────────────────────┐
- │   Live Session Dashboard │         │   Shogun (WSL2/tmux)    │
- │   http://localhost:3333  │         │   10 parallel agents    │
- └─────────────────────────┘         │   ASK BEFORE LAUNCHING  │
-                                     └─────────────────────────┘
-                                                 │
-                                  ┌──────┬───────┴───────┬──────┐
-                                  ▼      ▼               ▼      ▼
-                               ┌─────┐┌─────┐      ┌────────┐┌──────┐
-                               │Karo ││Ashi-│x7    │ Gunshi ││Shogun│
-                               │Mgr  ││garu │      │Strat.  ││Lord  │
-                               └─────┘└─────┘      └────────┘└──────┘
+                                 User Request
+                                      │
+                                      ▼
+                       ┌─────────────────────────┐
+                       │   CLAUDE.md Orchestrator │
+                       │   (auto-detects intent)  │
+                       └─────────────────────────┘
+                                      │
+                 ┌────────────────────┴────────────────────┐
+                 ▼                                         ▼
+          Claude Code Session                   Shogun (WSL2/tmux)
+          (single process)                      ASK BEFORE LAUNCHING
+                 │                                         │
+   ┌─────┬──────┼──────┬──────┬──────┐          ┌────┬────┼────┬─────┐
+   ▼     ▼      ▼      ▼      ▼      ▼          ▼    ▼    ▼    ▼     ▼
+ ┌─────┐┌────┐┌─────┐┌─────┐┌────┐┌──────┐   ┌────┐┌───┐x7┌──────┐┌────┐
+ │ Rex ││Luna││Spark││Vault││Task││Red   │   │Lord││Ash│  │Gunshi││Karo│
+ │ 17  ││ 6  ││  7  ││  4  ││Mstr││Team +│   │    ││ig.│  │Strat.││Mgr │
+ │agents│├────┤├─────┤├─────┤├────┤│Scout │   └────┘│aru│  └──────┘└────┘
+ └─────┘└────┘└─────┘└─────┘└────┘└──────┘         └───┘
+                 │                                         │
+                 ▼                                         ▼
+   ┌─────────────────────────┐              YAML files on disk
+   │   Live Session Dashboard │              (zero API coordination)
+   │   http://localhost:3333  │
+   └─────────────────────────┘
 ```
 
 ---
