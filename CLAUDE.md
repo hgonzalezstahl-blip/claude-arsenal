@@ -85,6 +85,7 @@ These rules govern when Claude automatically invokes orchestrators and agents wi
 - Production deployments
 - Small focused tasks (subagents within Claude Code are sufficient)
 
+**Repo:** `https://github.com/hgonzalezstahl-blip/multi-agent-shogun` (upstream: `yohey-w/multi-agent-shogun`)
 **Launch:** `wsl -d Ubuntu -u hgonz -- bash -lc 'cd ~/multi-agent-shogun && ./shutsujin_departure.sh'`
 **Connect:** `wsl -d Ubuntu -u hgonz -- bash -lc 'tmux attach -t shogun'`
 
