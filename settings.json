@@ -6,10 +6,6 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/dashboard-launch.sh"
-          },
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/ccproxy-start.sh"
           }
         ]
       },
