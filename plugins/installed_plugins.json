@@ -144,37 +144,37 @@
     "security-guidance@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\security-guidance\\unknown",
-        "version": "unknown",
+        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\security-guidance\\454d0b5a7dca",
+        "version": "454d0b5a7dca",
         "installedAt": "2026-04-17T14:04:56.701Z",
-        "lastUpdated": "2026-04-17T14:04:56.701Z"
+        "lastUpdated": "2026-04-20T23:01:21.198Z"
       }
     ],
     "code-review@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\code-review\\unknown",
-        "version": "unknown",
+        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\code-review\\454d0b5a7dca",
+        "version": "454d0b5a7dca",
         "installedAt": "2026-04-17T14:05:07.368Z",
-        "lastUpdated": "2026-04-17T14:05:07.368Z"
+        "lastUpdated": "2026-04-20T23:01:21.167Z"
       }
     ],
     "pr-review-toolkit@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\pr-review-toolkit\\unknown",
-        "version": "unknown",
+        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\pr-review-toolkit\\454d0b5a7dca",
+        "version": "454d0b5a7dca",
         "installedAt": "2026-04-17T14:05:11.367Z",
-        "lastUpdated": "2026-04-17T14:05:11.367Z"
+        "lastUpdated": "2026-04-20T23:01:21.229Z"
       }
     ],
     "feature-dev@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\feature-dev\\unknown",
-        "version": "unknown",
+        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\feature-dev\\454d0b5a7dca",
+        "version": "454d0b5a7dca",
         "installedAt": "2026-04-17T14:05:24.383Z",
-        "lastUpdated": "2026-04-17T14:05:24.383Z"
+        "lastUpdated": "2026-04-20T23:01:21.114Z"
       }
     ],
     "typescript-lsp@claude-plugins-official": [
@@ -189,19 +189,19 @@
     "hookify@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\hookify\\unknown",
-        "version": "unknown",
+        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\hookify\\454d0b5a7dca",
+        "version": "454d0b5a7dca",
         "installedAt": "2026-04-17T14:05:54.493Z",
-        "lastUpdated": "2026-04-17T14:05:54.493Z"
+        "lastUpdated": "2026-04-20T23:01:21.139Z"
       }
     ],
     "session-report@claude-plugins-official": [
       {
         "scope": "user",
-        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\session-report\\unknown",
-        "version": "unknown",
+        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\session-report\\454d0b5a7dca",
+        "version": "454d0b5a7dca",
         "installedAt": "2026-04-17T14:06:00.147Z",
-        "lastUpdated": "2026-04-17T14:06:00.147Z"
+        "lastUpdated": "2026-04-20T23:01:21.087Z"
       }
     ],
     "claude-code-setup@claude-plugins-official": [
@@ -211,6 +211,26 @@
         "version": "1.0.0",
         "installedAt": "2026-04-17T14:06:11.128Z",
         "lastUpdated": "2026-04-17T14:06:11.128Z"
+      }
+    ],
+    "vercel@claude-plugins-official": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\claude-plugins-official\\vercel\\0.40.0",
+        "version": "0.40.0",
+        "installedAt": "2026-04-21T05:10:44.347Z",
+        "lastUpdated": "2026-04-21T05:10:44.347Z",
+        "gitCommitSha": "8db97f0ce51120ac056a4e557f627a9428db4d74"
+      }
+    ],
+    "claude-mem@thedotmack": [
+      {
+        "scope": "user",
+        "installPath": "C:\\Users\\hgonz\\.claude\\plugins\\cache\\thedotmack\\claude-mem\\12.3.8",
+        "version": "12.3.8",
+        "installedAt": "2026-04-22T03:55:28.114Z",
+        "lastUpdated": "2026-04-22T03:55:28.114Z",
+        "gitCommitSha": "49ab404c083b3a5c51a2e810912c63f512364ff3"
       }
     ]
   }

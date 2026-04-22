@@ -36,3 +36,12 @@ agent-memory/
 
 # Backups
 backups/
+
+# Runtime audit data (generated per-session, not config)
+agent-audit.jsonl
+tool-audit.jsonl
+session-reports/
+session-env/
+
+# External tools (installed separately)
+tools/

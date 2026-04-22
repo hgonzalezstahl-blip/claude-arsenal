@@ -8,6 +8,14 @@
             "command": "bash ~/.claude/hooks/dashboard-launch.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -23,6 +31,23 @@
             "command": "bash ~/.claude/hooks/tdd-enforcement.sh"
           }
         ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/agent-audit.js"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -32,6 +57,14 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/detect-prompt-injection.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/truncate-large-output.sh"
+          },
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/tool-audit.js"
           }
         ]
       },
@@ -41,6 +74,10 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/auto-format.sh"
+          },
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/tool-audit.js"
           }
         ]
       },
@@ -50,6 +87,40 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/audit-log.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/truncate-large-output.sh"
+          },
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/tool-audit.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/agent-audit.js"
+          }
+        ]
+      },
+      {
+        "matcher": "Grep|Glob|Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/tool-audit.js"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
           }
         ]
       }
@@ -60,6 +131,18 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/session-end.sh"
+          },
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/session-report.js"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
           }
         ]
       }
@@ -70,6 +153,106 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/notify-windows.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
+          }
+        ]
+      }
+    ],
+    "Elicitation": [
+      {
+        "hooks": [
+          {
+            "type": "http",
+            "url": "http://localhost:3001/hooks/claude"
           }
         ]
       }
@@ -97,7 +280,9 @@
     "typescript-lsp@claude-plugins-official": true,
     "hookify@claude-plugins-official": true,
     "session-report@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true
+    "claude-code-setup@claude-plugins-official": true,
+    "vercel@claude-plugins-official": true,
+    "claude-mem@thedotmack": true
   },
   "extraKnownMarketplaces": {
     "trailofbits": {
@@ -110,6 +295,12 @@
       "source": {
         "source": "github",
         "repo": "EveryInc/compound-engineering-plugin"
+      }
+    },
+    "thedotmack": {
+      "source": {
+        "source": "github",
+        "repo": "thedotmack/claude-mem"
       }
     }
   },
