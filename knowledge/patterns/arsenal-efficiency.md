@@ -42,8 +42,9 @@ summary: "Patterns for running Claude Code arsenal efficiently: agent delegation
 
 ## Available Infrastructure
 
-- **ccproxy** at `~/.local/bin/ccproxy.exe` — model routing proxy. Start with `ccproxy start`, launch Claude with `ccproxy run claude`
+- **ccproxy** at `~/.local/bin/ccproxy.exe` — model routing proxy. Auto-starts on session start. Config at `~/.ccproxy/`
+- **qmd** — knowledge vault RAG. Indexes `~/.claude/knowledge/`. Re-index: `qmd update && qmd embed`. MCP server at user scope.
 - **claude-mem** — automatic session memory. View at http://localhost:37777. Search with /mem-search
 - **multi-agent-shogun** at `~/tools/multi-agent-shogun/` — tmux-based parallel execution. Launch with `./shutsujin_departure.sh` in WSL2
-- **Ctrl daemon** — `npx @bulletproof-sh/ctrl-daemon@latest` for visual agent monitoring + token tracking at ctrl.bulletproof.sh
+- **Ctrl daemon** — auto-starts via http hook. Visual agent monitoring + token tracking at ctrl.bulletproof.sh
 - **Audit summary** — `node ~/.claude/hooks/audit-summary.js [days]` for usage report
