@@ -139,23 +139,36 @@ claude-arsenal/
                                       │
                  ┌────────────────────┴────────────────────┐
                  ▼                                         ▼
-          Claude Code Session                   Shogun (WSL2/tmux)
-          (single process)                      ASK BEFORE LAUNCHING
+        Single Session (default)              Shogun (WSL2/tmux)
+        Claude suggests, user approves        USER MUST APPROVE FIRST
                  │                                         │
-   ┌─────┬──────┼──────┬──────┬──────┐          ┌────┬────┼────┬─────┐
-   ▼     ▼      ▼      ▼      ▼      ▼          ▼    ▼    ▼    ▼     ▼
- ┌─────┐┌────┐┌─────┐┌─────┐┌────┐┌──────┐   ┌────┐┌───┐x7┌──────┐┌────┐
- │ Rex ││Luna││Spark││Vault││Task││Red   │   │Lord││Ash│  │Gunshi││Karo│
- │ 17  ││ 6  ││  7  ││  4  ││Mstr││Team +│   │    ││ig.│  │Strat.││Mgr │
- │agents│├────┤├─────┤├─────┤├────┤│Scout │   └────┘│aru│  └──────┘└────┘
- └─────┘└────┘└─────┘└─────┘└────┘└──────┘         └───┘
-                 │                                         │
-                 ▼                                         ▼
-   ┌─────────────────────────┐              YAML files on disk
-   │   Live Session Dashboard │              (zero API coordination)
-   │   http://localhost:3333  │
+   ┌─────┬──────┼──────┬──────┬──────┐          ┌─────────┴─────────┐
+   ▼     ▼      ▼      ▼      ▼      ▼          ▼                   ▼
+ ┌─────┐┌────┐┌─────┐┌─────┐┌────┐┌──────┐   Standard        Arsenal Mode
+ │ Rex ││Luna││Spark││Vault││Task││Red   │   (generalist)    (--arsenal)
+ │ 17  ││ 6  ││  7  ││  4  ││Mstr││Team +│      │                  │
+ │     ││    ││     ││     ││    ││Scout │   ┌───┴───┐    ┌────────┴────────┐
+ └─────┘└────┘└─────┘└─────┘└────┘└──────┘   │Karo   │    │Karo assigns work│
+                                              │assigns│    │Each Ashigaru has│
+          Specialized agents,                 │generic│    │full arsenal:     │
+          deep quality gates,                 │tasks  │    │Rex, Luna, Spark,│
+          one thing at a time                 └───┬───┘    │Vault as subagents│
+                                                  │        └────────┬────────┘
+                 │                          ┌─────┴─────┐    ┌─────┴─────┐
+                 ▼                          │7 Ashigaru │    │7 Ashigaru │
+   ┌─────────────────────────┐              │(generalist)│    │(arsenal)  │
+   │   Live Session Dashboard │              │+ 1 Gunshi │    │+ 1 Gunshi │
+   │   http://localhost:3333  │              └───────────┘    └───────────┘
    └─────────────────────────┘
 ```
+
+**When to use each path:**
+
+| Path | Best For | Quality | Speed |
+|:-----|:---------|:--------|:------|
+| **Single Session** | Focused work, complex features, anything needing quality gates | High (8-gate pipeline) | Sequential |
+| **Shogun Standard** | Research, bulk scaffolding, independent file generation | Basic (no gates) | 7x parallel |
+| **Shogun Arsenal** | Building N independent modules, each with full quality gates | High (per-worker) | 7x parallel + quality |
 
 ---
 
