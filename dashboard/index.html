@@ -230,328 +230,434 @@ var TOOL_COLORS={Agent:'#22d3ee',Read:'#60a5fa',Edit:'#fbbf24',Write:'#fb923c',B
 var AGENT_COLORS=['#22d3ee','#60a5fa','#7c6aef','#f472b6','#fb923c','#34d399','#fbbf24','#f87171','#a78bfa','#2dd4bf'];
 
 // ═══════════════════════════════════════════════════════════════
-// TAVERN RENDERING SYSTEM — Tibia-style pixel art
+// TAVERN ENGINE — Tibia-quality pixel art with task simulation
 // ═══════════════════════════════════════════════════════════════
-var S=3; // pixel scale
+var S=3;
 
-// Character sprites: 8w x 12h, each row is string of hex color indices
-// Palette: 0=transparent .=skin H=hair P=primary S=secondary M=metal D=dark W=white R=red O=orange Y=yellow G=green B=blue
-var CHAR_SPRITES = {
-  dragon: { // Red dragon — for orchestrators
-    rows:['..RRRR..','..RR.RR.','RRRRRRRR','RRORRORP','RRRRRRRR','RRRRORRR','..RRRR..','OORRRROO','.RRRRRR.','..RRRR..','.RR..RR.','RR....RR'],
-    pal:{R:'#c0392b',O:'#e67e22',P:'#e74c3c','.':'#f5b041'}
+// ─── Outlined Sprite Renderer ───────────────────────────────
+// Draws sprites with auto-generated 1px dark outline (Tibia style)
+function renderSprite(ctx,rows,pal,ox,oy,sc,flip){
+  var h=rows.length,w=rows[0].length;
+  // Pass 1: outline
+  for(var r=0;r<h;r++){for(var c=0;c<w;c++){
+    if(rows[r][c]==='.') continue;
+    var dirs=[[-1,0],[1,0],[0,-1],[0,1]];
+    for(var d=0;d<4;d++){
+      var nr=r+dirs[d][1],nc=c+dirs[d][0];
+      if(nr<0||nr>=h||nc<0||nc>=w||rows[nr][nc]==='.'){
+        var fx=flip?(w-1-(c+dirs[d][0])):(c+dirs[d][0]);
+        var fy=r+dirs[d][1];
+        if(fx>=0&&fx<w&&fy>=0&&fy<h){ctx.fillStyle='#0e0e0e';ctx.fillRect(ox+fx*sc,oy+fy*sc,sc,sc)}
+      }
+    }
+  }}
+  // Pass 2: fill
+  for(var r=0;r<h;r++){for(var c=0;c<w;c++){
+    var ch=rows[r][c];if(ch==='.')continue;
+    var fc=flip?(w-1-c):c;
+    ctx.fillStyle=pal[ch]||'#f0f';
+    ctx.fillRect(ox+fc*sc,oy+r*sc,sc,sc);
+  }}
+}
+
+// ─── Character Sprites (10w x 16h, with shading) ────────────
+// Palette keys: a-c=primary(dark/mid/light), d-f=secondary, s=skin, t=skin shadow, h=hair, e=eye, k=dark, w=white, g=gold
+var CHARS={
+  dragon:{
+    body:['...abba...','..abccba..','..acccca..','abccccccba','accdccdcca','abccccccba','..abccba..','aabbccbbaa','.abccccba.'],
+    legs:[['.ab....ba.','.ab....ba.','ab......ba'],['.a.b..b.a.','ab......ba','.ab....ba.']],
+    pal:{a:'#8b1a10',b:'#c0392b',c:'#e74c3c',d:'#f1c40f','.':null},
+    task:'commanding'
   },
-  knight: { // Armored knight — rex build agents
-    rows:['..MMMM..','..MDDM..','.MMMMMM.','..S..S..','.PPPPPP.','PPPPPPPP','.PPPPPP.','.PSSPSP.','..PPPP..','..PP.PP.','.PP..PP.','PP....PP'],
-    pal:{M:'#95a5a6',D:'#2c3e50',P:'#7f8c8d',S:'#bdc3c7','.':null}
+  knight:{
+    body:['...deed...','..deefed..','..deefed..','.ds.ss.sd.','..dssssd..','..abccba..','aabccccbaa','.abcggcba.','.aabccbaa.'],
+    legs:[['..ab..ba..','..ab..ba..','.akk..kka.'],['.ab....ba.','..ab..ba..','.akk..kka.']],
+    pal:{a:'#5a636e',b:'#7f8c8d',c:'#95a5a6',d:'#6b7b8d',e:'#b0bec5',f:'#cfd8dc',s:'#d2a679',g:'#d4a017',k:'#3d2b1f','.':null},
+    task:'smithing'
   },
-  mage: { // Purple mage — luna, architects
-    rows:['...PP...','..PPPP..','..PPPP..','.P.SS.P.','..SSSS..','..PPPP..','PPPPPPPP','.PPPPPP.','.PPPPPP.','..PPPP..','..PP.PP.','.PP..PP.'],
-    pal:{P:'#8e44ad',S:'#f5cba7','.':null}
+  mage:{
+    body:['....ab....','...abba...','..abccba..','..abccba..','.as.ss.sa.','..asssssa.','..aabbaa..','aabbccbbaa','.abccccba.'],
+    legs:[['..abccba..','..ab..ba..','.ak....ka.'],['.ab....ba.','..ab..ba..','.ak....ka.']],
+    pal:{a:'#6c3483',b:'#8e44ad',c:'#a569bd',s:'#d2a679',k:'#3d2b1f','.':null},
+    task:'casting'
   },
-  ranger: { // Green ranger — explore, scout
-    rows:['..GGGG..','..GSSG..','.G.SS.G.','..SSSS..','..GGGG..','GGGBBGGG','.GGGGGG.','.GGGGGG.','..GGGG..','.GG..GG.','GG....GG','.BB..BB.'],
-    pal:{G:'#27ae60',S:'#f5cba7',B:'#6d4c41','.':null}
+  ranger:{
+    body:['..aabbaa..','..abccba..','.ab.ss.ba.','..asssssa.','..aabbaa..','aabbddbbaa','.abbbbbba.','.abbbbbba.','..aabbaa..'],
+    legs:[['.ab....ba.','ab......ba','.dk....kd.'],['.a.b..b.a.','ab......ba','.dk....kd.']],
+    pal:{a:'#1e7e34',b:'#27ae60',c:'#2ecc71',s:'#d2a679',d:'#5d4037',k:'#3d2b1f','.':null},
+    task:'scouting'
   },
-  healer: { // White healer — QA, docs
-    rows:['..WWWW..','..WSSWW.','.W.SS.W.','..SSSS..','..WWWW..','.WWGGWW.','WWWGGWWW','.WWWWWW.','.WWWWWW.','..WWWW..','..WW.WW.','.WW..WW.'],
-    pal:{W:'#ecf0f1',S:'#f5cba7',G:'#27ae60','.':null}
+  healer:{
+    body:['..aabbaa..','..abssBa..','.ab.ss.ba.','..asssssa.','..aabbaa..','.aabggbaa.','aabbggbbaa','.abbbbbba.','..aabbaa..'],
+    legs:[['..ab..ba..','..ab..ba..','.ak....ka.'],['.ab....ba.','..ab..ba..','.ak....ka.']],
+    pal:{a:'#bdc3c7',b:'#ecf0f1',B:'#f5f5f5',s:'#d2a679',g:'#27ae60',k:'#3d2b1f','.':null},
+    task:'writing'
   },
-  rogue: { // Dark rogue — debugger
-    rows:['..DDDD..','..DDDD..','DDD..DDD','..SSSS..','..DDDD..','SDDDDDDS','.DDDDDD.','.DDDDDM.','..DDDD..','..DD.DD.','.DD..DD.','DD....DD'],
-    pal:{D:'#2c3e50',S:'#f5cba7',M:'#95a5a6','.':null}
+  rogue:{
+    body:['..aabbaa..','..abbbba..','abb....bba','..asssssa.','..aabbaa..','saabbbaass','.abbbbbba.','.abbbbkba.','..aabbaa..'],
+    legs:[['..ab..ba..','.ab....ba.','ak......ka'],['ak......ka','.ab....ba.','..ab..ba..']],
+    pal:{a:'#1c2833',b:'#2c3e50',s:'#d2a679',k:'#7f8c8d','.':null},
+    task:'brewing'
   },
-  fire_mage: { // Fire mage — spark agents
-    rows:['..YOY...','..OOOO..','..OOOO..','.O.SS.O.','..SSSS..','..RRRR..','RRRRRRRR','.RRRRRR.','.RROROO.','..RRRR..','.RR..RR.','RR....RR'],
-    pal:{R:'#c0392b',O:'#e67e22',Y:'#f1c40f',S:'#f5cba7','.':null}
+  fire_mage:{
+    body:['..ghg.....','..abba....','..abcba...','.ab.ss.ba.','..asssssa.','..aabbaa..','aabbccbbaa','.abccccba.','.aabcbcaa.'],
+    legs:[['..aabbaa..','.ab....ba.','ak......ka'],['.ab....ba.','..ab..ba..','ak......ka']],
+    pal:{a:'#922b21',b:'#c0392b',c:'#e74c3c',s:'#d2a679',g:'#f39c12',h:'#f1c40f',k:'#3d2b1f','.':null},
+    task:'casting'
   },
-  dwarf: { // Stout dwarf — vault, finance
-    rows:['........','..BBBB..','..BSSB..','.B.SS.B.','..SSSS..','BBBBBBBB','BBBBBBBB','BBYBBBYB','.BBBBBB.','.BBBBBB.','BBB..BBB','BBB..BBB'],
-    pal:{B:'#d4a017',S:'#f5cba7',Y:'#f1c40f','.':null}
+  dwarf:{
+    body:['..........','..aabbaa..','..abssBa..','..asssssa.','..asssssa.','aabbbbbbaa','aabbbbbbaa','aabgbbgbaa','.abbbbbba.'],
+    legs:[['.abbbbbba.','abb....bba','abb....bba'],['.abbbbbba.','ab..bbb.ba','abb....bba']],
+    pal:{a:'#9c7c38',b:'#d4a017',B:'#e8c547',s:'#d2a679',g:'#f1c40f','.':null},
+    task:'counting'
   },
-  sentinel: { // Heavy sentinel — security, review
-    rows:['..MMMM..','..MDDM..','.MMMMMM.','..S..S..','MPPPPPPB','MPPPPPPB','MPPMPPBB','.PPPPPP.','..PPPP..','.PPP.PP.','PPP..PP.','PP....PP'],
-    pal:{M:'#5b6abf',D:'#2c3e50',P:'#3d5a99',S:'#f5cba7',B:'#7f8c8d','.':null}
+  sentinel:{
+    body:['...deed...','..deefed..','..dddddd..','.ds.ss.sd.','daabbbbcca','daabbbbcca','dababbccca','.abbbbbba.','..aabbaa..'],
+    legs:[['..ab..ba..','..ab..ba..','ab......ba'],['.ab....ba.','..ab..ba..','ab......ba']],
+    pal:{a:'#2e4a7a',b:'#3d5a99',c:'#7f8c8d',d:'#4a69a0',e:'#8fa8c8',f:'#b0c4de',s:'#d2a679','.':null},
+    task:'guarding'
   },
-  scholar: { // Scholar with book — researcher
-    rows:['..BBBB..','..BSSB..','.B.SS.B.','..SSSS..','..BBBB..','BBBWWBBB','.BBWWBB.','.BBBBBB.','..BBBB..','.BB..BB.','BB....BB','.BB..BB.'],
-    pal:{B:'#2980b9',S:'#f5cba7',W:'#ecf0f1','.':null}
+  scholar:{
+    body:['..aabbaa..','..abssBa..','.ab.ss.ba.','..asssssa.','..aabbaa..','aabbwwbbaa','.abwwwbba.','.abbbbbba.','..aabbaa..'],
+    legs:[['.ab....ba.','ab......ba','.ak....ka.'],['.a.b..b.a.','ab......ba','.ak....ka.']],
+    pal:{a:'#1a5276',b:'#2980b9',B:'#5dade2',s:'#d2a679',w:'#ecf0f1',k:'#3d2b1f','.':null},
+    task:'reading'
   },
-  warrior: { // General warrior — general purpose
-    rows:['..MMMM..','..M..M..','.M.SS.M.','..SSSS..','.PPPPPP.','PPPPPPPM','.PPPPPP.','.PPPPPP.','..PPPP..','.PP..PP.','PP....PP','.MM..MM.'],
-    pal:{M:'#95a5a6',P:'#e67e22',S:'#f5cba7','.':null}
+  warrior:{
+    body:['..dddd....','..d..d....','.d.ss.d...','..sssss...','..abccba..','abccccckaa','.abccccba.','.abbbbbba.','..aabbaa..'],
+    legs:[['.ab....ba.','ab......ba','.dd....dd.'],['.a.b..b.a.','ab......ba','.dd....dd.']],
+    pal:{a:'#b35900',b:'#d4760a',c:'#e67e22',d:'#7f8c8d',s:'#d2a679',k:'#95a5a6','.':null},
+    task:'smithing'
   },
 };
 
 function getAgentChar(name){
   var n=name.toLowerCase();
-  if(n.indexOf('orchestrator')>=0||n==='rex-rekaliber-orchestrator') return {type:'dragon',label:'Dragon'};
-  if(n.indexOf('rex-back')>=0||n.indexOf('rex-front')>=0||n.indexOf('rex-data')>=0) return {type:'knight',label:'Knight'};
-  if(n.indexOf('rex-')>=0) return {type:'knight',label:'Knight'};
-  if(n.indexOf('luna')>=0) return {type:'mage',label:'Mage'};
-  if(n.indexOf('spark')>=0||n.indexOf('fire')>=0) return {type:'fire_mage',label:'Fire Mage'};
-  if(n.indexOf('vault')>=0) return {type:'dwarf',label:'Dwarf'};
-  if(n.indexOf('scout')>=0) return {type:'ranger',label:'Ranger'};
-  if(n.indexOf('explore')>=0||n.indexOf('research')>=0) return {type:'scholar',label:'Scholar'};
-  if(n.indexOf('review')>=0||n.indexOf('security')>=0||n.indexOf('sentinel')>=0) return {type:'sentinel',label:'Sentinel'};
-  if(n.indexOf('test')>=0||n.indexOf('qa')>=0||n.indexOf('doc')>=0) return {type:'healer',label:'Healer'};
-  if(n.indexOf('debug')>=0) return {type:'rogue',label:'Rogue'};
-  if(n.indexOf('architect')>=0||n.indexOf('plan')>=0||n.indexOf('task')>=0) return {type:'mage',label:'Mage'};
-  if(n.indexOf('writer')>=0||n.indexOf('design')>=0) return {type:'fire_mage',label:'Artisan'};
-  return {type:'warrior',label:'Warrior'};
+  if(n.indexOf('orchestrator')>=0) return{type:'dragon',label:'Dragon'};
+  if(n.indexOf('rex-')>=0) return{type:'knight',label:'Knight'};
+  if(n.indexOf('luna')>=0) return{type:'mage',label:'Mage'};
+  if(n.indexOf('spark')>=0) return{type:'fire_mage',label:'Fire Mage'};
+  if(n.indexOf('vault')>=0) return{type:'dwarf',label:'Dwarf'};
+  if(n.indexOf('scout')>=0) return{type:'ranger',label:'Ranger'};
+  if(n.indexOf('explore')>=0||n.indexOf('research')>=0) return{type:'scholar',label:'Scholar'};
+  if(n.indexOf('review')>=0||n.indexOf('security')>=0) return{type:'sentinel',label:'Sentinel'};
+  if(n.indexOf('test')>=0||n.indexOf('qa')>=0||n.indexOf('doc')>=0) return{type:'healer',label:'Healer'};
+  if(n.indexOf('debug')>=0) return{type:'rogue',label:'Rogue'};
+  if(n.indexOf('architect')>=0||n.indexOf('plan')>=0) return{type:'mage',label:'Mage'};
+  if(n.indexOf('writer')>=0||n.indexOf('design')>=0) return{type:'fire_mage',label:'Artisan'};
+  return{type:'warrior',label:'Warrior'};
 }
 
-function drawSprite(ctx,type,px,py,scale,frame){
-  var sp=CHAR_SPRITES[type]||CHAR_SPRITES.warrior;
-  var bob=Math.round(Math.sin(frame*0.05)*0.7); // subtle idle bob
-  for(var r=0;r<sp.rows.length;r++){
-    var row=sp.rows[r];
-    for(var c=0;c<row.length;c++){
-      var ch=row[c];
-      var color=sp.pal[ch];
-      if(!color) continue;
-      ctx.fillStyle=color;
-      ctx.fillRect(px+c*scale, py+(r+bob)*scale, scale, scale);
+function drawCreature(ctx,type,px,py,sc,frame,state,facing){
+  var sp=CHARS[type]||CHARS.warrior;
+  var bob=state==='walking'?0:Math.round(Math.sin(frame*0.04)*0.7);
+  var flip=facing<0;
+  // Compose rows: body + current leg frame
+  var legIdx=state==='walking'?((Math.floor(frame/8))%2):0;
+  var allRows=sp.body.concat(sp.legs[legIdx]);
+  // Render with auto outline
+  renderSprite(ctx,allRows,sp.pal,px,py+bob*sc,sc,flip);
+}
+
+// ─── Task Props (drawn near working agents) ─────────────────
+function drawTaskProp(ctx,task,x,y,sc,frame){
+  var f=Math.sin(frame*0.08);
+  if(task==='writing'||task==='reading'){
+    // Book + quill
+    ctx.fillStyle='#8B4513';ctx.fillRect(x,y,sc*5,sc*4); // book cover
+    ctx.fillStyle='#f5f5dc';ctx.fillRect(x+sc*0.5,y+sc*0.5,sc*4,sc*3); // pages
+    ctx.fillStyle='#1a1a1a'; // text lines
+    for(var l=0;l<3;l++) ctx.fillRect(x+sc,y+sc*(1+l*0.8),sc*3,sc*0.3);
+    if(task==='writing'){
+      // Quill (animated)
+      var qy=y-sc*2+f*sc*0.5;
+      ctx.fillStyle='#ecf0f1';ctx.fillRect(x+sc*3,qy,sc*0.5,sc*3);
+      ctx.fillStyle='#e74c3c';ctx.fillRect(x+sc*2.5,qy-sc*0.5,sc*1.5,sc*1);
     }
+  }else if(task==='casting'){
+    // Magic circle + sparkles
+    ctx.strokeStyle='rgba(142,68,173,0.4)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(x+sc*2,y+sc*2,sc*4+f*sc,0,Math.PI*2);ctx.stroke();
+    for(var p=0;p<5;p++){
+      var a=frame*0.05+p*1.26;
+      var px2=x+sc*2+Math.cos(a)*(sc*3+f*sc);
+      var py2=y+sc*2+Math.sin(a)*(sc*3+f*sc);
+      ctx.fillStyle=['#a569bd','#f1c40f','#7c6aef','#22d3ee','#e74c3c'][p];
+      ctx.beginPath();ctx.arc(px2,py2,sc*0.7,0,Math.PI*2);ctx.fill();
+    }
+  }else if(task==='smithing'){
+    // Anvil + sparks
+    ctx.fillStyle='#555';ctx.fillRect(x,y+sc*2,sc*6,sc*2); // anvil top
+    ctx.fillStyle='#444';ctx.fillRect(x+sc,y+sc*4,sc*4,sc*3); // anvil base
+    ctx.fillStyle='#777';ctx.fillRect(x-sc*0.5,y+sc*1.5,sc*7,sc*1); // anvil face
+    // Hammer
+    var hy=y-sc*2+Math.abs(f)*sc*3;
+    ctx.fillStyle='#8B4513';ctx.fillRect(x+sc*2,hy,sc*1,sc*4); // handle
+    ctx.fillStyle='#666';ctx.fillRect(x+sc*1,hy-sc*1,sc*3,sc*2); // head
+    // Sparks when hammer down
+    if(f>0.5){for(var sp=0;sp<3;sp++){
+      ctx.fillStyle='#f1c40f';
+      ctx.beginPath();ctx.arc(x+sc*(1+Math.random()*4),y+sc*(1-Math.random()*2),sc*0.4,0,Math.PI*2);ctx.fill();
+    }}
+  }else if(task==='brewing'){
+    // Cauldron + bubbles
+    ctx.fillStyle='#333';ctx.beginPath();ctx.ellipse(x+sc*3,y+sc*4,sc*3.5,sc*2.5,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#2ecc71';ctx.beginPath();ctx.ellipse(x+sc*3,y+sc*3,sc*2.5,sc*1.5,0,0,Math.PI*2);ctx.fill();
+    // Bubbles
+    for(var b=0;b<3;b++){
+      var by=y+sc*(1-b*1.5)+(frame*0.3+b*30)%( sc*5)-sc*5;
+      var bx=x+sc*(2+Math.sin(frame*0.03+b)*1.5);
+      ctx.fillStyle='rgba(46,204,113,0.5)';ctx.beginPath();ctx.arc(bx,by,sc*0.5+b*sc*0.2,0,Math.PI*2);ctx.fill();
+    }
+  }else if(task==='guarding'){
+    // Shield raised
+    ctx.fillStyle='#2e4a7a';ctx.fillRect(x,y,sc*4,sc*6);
+    ctx.fillStyle='#3d5a99';ctx.fillRect(x+sc*0.5,y+sc*0.5,sc*3,sc*5);
+    ctx.fillStyle='#b0c4de';ctx.fillRect(x+sc*1.5,y+sc*2,sc*1,sc*2); // emblem
+  }else if(task==='commanding'){
+    // Scepter + aura
+    ctx.fillStyle='#d4a017';ctx.fillRect(x+sc*2,y-sc*2,sc*1,sc*6); // scepter
+    ctx.fillStyle='#f1c40f';ctx.beginPath();ctx.arc(x+sc*2.5,y-sc*3,sc*1.5,0,Math.PI*2);ctx.fill();
+    // Fire aura
+    ctx.fillStyle='rgba(231,76,60,'+(0.2+Math.abs(f)*0.15)+')';
+    ctx.beginPath();ctx.arc(x+sc*2.5,y+sc*2,sc*6+f*sc*2,0,Math.PI*2);ctx.fill();
+  }else if(task==='counting'){
+    // Gold coins
+    for(var c=0;c<4;c++){
+      ctx.fillStyle='#d4a017';ctx.beginPath();ctx.arc(x+sc*(1+c*1.5),y+sc*3,sc*0.8,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#f1c40f';ctx.beginPath();ctx.arc(x+sc*(1+c*1.5)-sc*0.2,y+sc*2.8,sc*0.5,0,Math.PI*2);ctx.fill();
+    }
+  }else if(task==='scouting'){
+    // Map
+    ctx.fillStyle='#f5e6c8';ctx.fillRect(x,y,sc*6,sc*4);
+    ctx.fillStyle='#8B4513';ctx.fillRect(x,y,sc*6,sc*0.3); // top edge
+    ctx.strokeStyle='#c0392b';ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.moveTo(x+sc,y+sc);ctx.lineTo(x+sc*3,y+sc*2);ctx.lineTo(x+sc*5,y+sc*1.5);ctx.stroke();
+    ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(x+sc*5,y+sc*1.5,sc*0.4,0,Math.PI*2);ctx.fill(); // X mark
   }
 }
 
-// ─── Tavern Environment ─────────────────────────────────────
-var FLOOR_COLORS=['#3d2b1f','#4a3728','#3d2b1f','#352318'];
-var WALL_COLOR='#2a1f14';
-var WALL_TOP='#4a3728';
-var TABLE_COLOR='#5c3a1e';
-var TABLE_TOP='#7a4e2e';
-var BARREL_COLOR='#4a3016';
-var BARREL_BAND='#6d4c41';
-
+// ─── Environment ────────────────────────────────────────────
 function drawTavernBG(ctx,W,H,frame){
-  var ts=16*S; // tile size in pixels
-  // Floor
-  for(var y=0;y<H;y+=ts){
-    for(var x=0;x<W;x+=ts){
-      var ci=((x/ts)+(y/ts))%2;
-      ctx.fillStyle=FLOOR_COLORS[ci];
-      ctx.fillRect(x,y,ts,ts);
-      // Subtle floor variation
-      ctx.fillStyle='rgba(0,0,0,0.05)';
-      if(((x/ts*7)+(y/ts*13))%5===0) ctx.fillRect(x,y,ts,ts);
-    }
+  var ts=16*S;
+  // Floor: stone tiles
+  for(var y=0;y<H;y+=ts){for(var x=0;x<W;x+=ts){
+    var ci=((x/ts)+(y/ts))%2;
+    ctx.fillStyle=['#3d2b1f','#4a3728'][ci];ctx.fillRect(x,y,ts,ts);
+    ctx.fillStyle='rgba(0,0,0,0.03)';for(var g=2;g<ts;g+=4)ctx.fillRect(x,y+g,ts,1);
+    if(((x*7+y*13)%37)===0){ctx.fillStyle='rgba(0,0,0,0.06)';ctx.beginPath();ctx.arc(x+ts/2,y+ts/2,S*1.5,0,Math.PI*2);ctx.fill()}
+  }}
+  // Back wall — stone bricks
+  ctx.fillStyle='#2a1f14';ctx.fillRect(0,0,W,ts*2);
+  for(var by=0;by<ts*2;by+=ts/2){for(var bx=(by%(ts)===0?0:ts/2);bx<W;bx+=ts){
+    ctx.fillStyle='rgba(255,255,255,'+(0.02+((bx+by*3)%7)*0.003)+')';
+    ctx.fillRect(bx+1,by+1,ts-2,ts/2-2);
+  }}
+  ctx.fillStyle='#5c4033';ctx.fillRect(0,ts*2-S*2,W,S*3);
+  // Shelves with bottles
+  ctx.fillStyle='#5c3a1e';ctx.fillRect(W*0.08,ts*0.6,W*0.22,S*2);ctx.fillRect(W*0.68,ts*0.6,W*0.22,S*2);
+  var btlColors=['#2ecc71','#e74c3c','#3498db','#f39c12','#9b59b6'];
+  for(var bx=W*0.09;bx<W*0.29;bx+=S*5){ctx.fillStyle=btlColors[Math.floor((bx*7)%5)];ctx.fillRect(bx,ts*0.6-S*3,S*2,S*3);ctx.fillStyle='#4a3016';ctx.fillRect(bx+S*0.3,ts*0.6-S*4.5,S*1.4,S*1.5)}
+  for(var bx=W*0.69;bx<W*0.89;bx+=S*5){ctx.fillStyle=btlColors[Math.floor((bx*3)%5)];ctx.fillRect(bx,ts*0.6-S*3,S*2,S*3);ctx.fillStyle='#4a3016';ctx.fillRect(bx+S*0.3,ts*0.6-S*4.5,S*1.4,S*1.5)}
+  // Torches
+  var tsp=Math.max(110,W/5);
+  for(var tx=tsp/2;tx<W;tx+=tsp){
+    ctx.fillStyle='#5c4033';ctx.fillRect(tx-S,ts,S*2,S*6);
+    var f1=Math.sin(frame*0.15)*S,f2=Math.cos(frame*0.2)*S*0.5;
+    ctx.fillStyle='#f39c12';ctx.beginPath();ctx.arc(tx,ts-S+f2,S*2.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(tx+f1*0.3,ts-S*1.5+f1,S*1.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#f1c40f';ctx.beginPath();ctx.arc(tx-f1*0.2,ts-S*0.5,S,0,Math.PI*2);ctx.fill();
+    var glow=ctx.createRadialGradient(tx,ts,0,tx,ts,S*22);glow.addColorStop(0,'rgba(255,180,50,0.10)');glow.addColorStop(1,'rgba(255,180,50,0)');ctx.fillStyle=glow;ctx.fillRect(tx-S*22,ts-S*22,S*44,S*44);
   }
-  // Back wall
-  ctx.fillStyle=WALL_COLOR;
-  ctx.fillRect(0,0,W,ts*2);
-  ctx.fillStyle=WALL_TOP;
-  ctx.fillRect(0,ts*2-S*2,W,S*2);
-  // Stone wall texture
-  for(var wx=0;wx<W;wx+=ts){
-    ctx.fillStyle='rgba(255,255,255,0.03)';
-    ctx.fillRect(wx+2,S*2,ts-4,ts-S*2);
-    ctx.fillStyle='rgba(0,0,0,0.1)';
-    ctx.fillRect(wx,0,1,ts*2);
-  }
-  // Torches on wall
-  var torchSpacing=Math.max(120,W/5);
-  for(var tx=torchSpacing/2;tx<W;tx+=torchSpacing){
-    drawTorch(ctx,tx,ts*1.2,frame);
-  }
+  // Fireplace center
+  var fpx=W/2,fpy=ts*1.2;
+  ctx.fillStyle='#4a3728';ctx.fillRect(fpx-S*10,fpy-S*6,S*20,S*14);ctx.fillStyle='#1a1410';ctx.fillRect(fpx-S*7,fpy-S*3,S*14,S*11);
+  var ff=Math.sin(frame*0.12)*S;
+  ctx.fillStyle='#c0392b';ctx.beginPath();ctx.arc(fpx,fpy+S*3+ff*0.5,S*5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#e67e22';ctx.beginPath();ctx.arc(fpx+ff*0.4,fpy+S*1,S*4,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#f39c12';ctx.beginPath();ctx.arc(fpx-ff*0.3,fpy+S*2,S*3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#f1c40f';ctx.beginPath();ctx.arc(fpx,fpy-S*0.5+ff,S*2,0,Math.PI*2);ctx.fill();
+  var fpGlow=ctx.createRadialGradient(fpx,fpy+S*2,0,fpx,fpy+S*2,S*45);fpGlow.addColorStop(0,'rgba(255,140,40,0.12)');fpGlow.addColorStop(1,'rgba(255,140,40,0)');ctx.fillStyle=fpGlow;ctx.fillRect(fpx-S*45,fpy-S*35,S*90,S*75);
   // Bar counter
-  var barY=ts*2+S*4;
-  ctx.fillStyle=TABLE_COLOR;
-  ctx.fillRect(S*8,barY,W-S*16,S*10);
-  ctx.fillStyle=TABLE_TOP;
-  ctx.fillRect(S*8,barY,W-S*16,S*3);
-  // Mugs on bar
-  for(var mx=S*14;mx<W-S*16;mx+=S*18){
-    ctx.fillStyle='#8B7355';ctx.fillRect(mx,barY-S*2,S*3,S*3);
-    ctx.fillStyle='#D4A54A';ctx.fillRect(mx,barY-S*3,S*3,S*1);
-  }
-  // Tables (round-ish)
-  var tablePositions=[];
-  var cols=Math.max(2,Math.floor((W-S*30)/(S*60)));
-  var rowCount=Math.max(1,Math.floor((H-ts*2-S*40)/(S*50)));
-  for(var tr=0;tr<rowCount;tr++){
-    for(var tc=0;tc<cols;tc++){
-      var txx=S*30+tc*((W-S*60)/Math.max(1,cols-1||1));
-      var tyy=ts*2+S*32+tr*S*50;
-      if(tyy+S*20>H-S*10) continue;
-      tablePositions.push({x:txx,y:tyy});
-      drawTable(ctx,txx,tyy);
-    }
-  }
-  // Barrels in corners
-  drawBarrel(ctx,S*3,H-S*18);
-  drawBarrel(ctx,S*10,H-S*16);
-  drawBarrel(ctx,W-S*14,H-S*18);
-  drawBarrel(ctx,W-S*7,H-S*16);
-  // Warm ambient overlay
-  var grad=ctx.createRadialGradient(W/2,H*0.3,0,W/2,H*0.3,W*0.7);
-  grad.addColorStop(0,'rgba(255,180,80,0.06)');
-  grad.addColorStop(1,'rgba(0,0,0,0.15)');
-  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-  return tablePositions;
-}
-
-function drawTorch(ctx,x,y,frame){
-  // Bracket
-  ctx.fillStyle='#5c4033';
-  ctx.fillRect(x-S,y,S*2,S*6);
-  // Flame (animated)
-  var flicker=Math.sin(frame*0.15)*S;
-  var flicker2=Math.cos(frame*0.2)*S*0.5;
-  ctx.fillStyle='#f39c12';
-  ctx.beginPath();ctx.arc(x,y-S+flicker2,S*2.5,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#e74c3c';
-  ctx.beginPath();ctx.arc(x+flicker*0.3,y-S*1.5+flicker,S*1.5,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#f1c40f';
-  ctx.beginPath();ctx.arc(x-flicker*0.2,y-S*0.5,S*1,0,Math.PI*2);ctx.fill();
-  // Glow
-  var glow=ctx.createRadialGradient(x,y,0,x,y,S*20);
-  glow.addColorStop(0,'rgba(255,180,50,0.12)');
-  glow.addColorStop(1,'rgba(255,180,50,0)');
-  ctx.fillStyle=glow;ctx.fillRect(x-S*20,y-S*20,S*40,S*40);
+  var barY=ts*2+S*6;
+  ctx.fillStyle='#4a2a10';ctx.fillRect(S*10,barY+S*2,W-S*20,S*8);
+  ctx.fillStyle='#6b3d1f';ctx.fillRect(S*10,barY,W-S*20,S*4);
+  ctx.fillStyle='#7a4e2e';ctx.fillRect(S*10,barY,W-S*20,S*2);
+  for(var mx=S*16;mx<W-S*20;mx+=S*22){ctx.fillStyle='#8B7355';ctx.fillRect(mx,barY-S*2,S*3,S*3);ctx.fillStyle='#D4A54A';ctx.fillRect(mx,barY-S*3,S*3,S*1)}
 }
 
 function drawTable(ctx,x,y){
-  // Shadow
-  ctx.fillStyle='rgba(0,0,0,0.2)';
-  ctx.beginPath();ctx.ellipse(x,y+S*3,S*9,S*5,0,0,Math.PI*2);ctx.fill();
-  // Table top
-  ctx.fillStyle=TABLE_COLOR;
-  ctx.beginPath();ctx.ellipse(x,y,S*8,S*4,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=TABLE_TOP;
-  ctx.beginPath();ctx.ellipse(x,y-S,S*7,S*3,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.12)';ctx.beginPath();ctx.ellipse(x,y+S*3,S*9,S*5,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#5c3a1e';ctx.beginPath();ctx.ellipse(x,y,S*8,S*4,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#7a4e2e';ctx.beginPath();ctx.ellipse(x,y-S,S*7,S*3,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#f5f5dc';ctx.fillRect(x-S*0.5,y-S*4,S,S*3);ctx.fillStyle='#f1c40f';ctx.beginPath();ctx.arc(x,y-S*4.5,S*0.8,0,Math.PI*2);ctx.fill();
 }
-
 function drawBarrel(ctx,x,y){
-  ctx.fillStyle=BARREL_COLOR;
-  ctx.beginPath();ctx.ellipse(x,y,S*4,S*5,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=BARREL_BAND;
-  ctx.fillRect(x-S*3.5,y-S*2,S*7,S*1.5);
-  ctx.fillRect(x-S*3.5,y+S*1,S*7,S*1.5);
-  ctx.fillStyle='rgba(255,255,255,0.05)';
-  ctx.beginPath();ctx.ellipse(x-S,y-S,S*2,S*3,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#4a3016';ctx.beginPath();ctx.ellipse(x,y,S*4,S*5,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#6d4c41';ctx.fillRect(x-S*3.5,y-S*2,S*7,S*1.5);ctx.fillRect(x-S*3.5,y+S*1,S*7,S*1.5);
 }
 
-// ─── Tavern Scene Manager ───────────────────────────────────
+// ─── Workstations (fixed positions in tavern) ───────────────
+function layoutWorkstations(W,H){
+  var ts=16*S,floorTop=ts*2+S*22;
+  var midY=(floorTop+H)/2;
+  return {
+    smithing:{x:S*20,y:midY-S*10},         // left side
+    writing:{x:W-S*50,y:floorTop+S*8},      // right near wall
+    reading:{x:W-S*30,y:midY+S*10},         // right side
+    casting:{x:W/2,y:midY+S*5},             // center floor
+    brewing:{x:S*18,y:midY+S*20},           // left bottom
+    guarding:{x:W/2+S*30,y:floorTop+S*12},  // center-right
+    commanding:{x:W/2,y:floorTop+S*6},      // center top
+    counting:{x:W-S*20,y:midY-S*5},         // right
+    scouting:{x:S*45,y:midY},               // left-center
+  };
+}
+
+// ─── Agent Entity ───────────────────────────────────────────
+function AgentEntity(agentData,W,H,stations){
+  this.data=agentData;
+  this.char=getAgentChar(agentData.name);
+  this.task=CHARS[this.char.type]?CHARS[this.char.type].task:'smithing';
+  this.W=W;this.H=H;
+  var ts=16*S,floorTop=ts*2+S*22,margin=S*14;
+  // Start at random position
+  this.x=margin+Math.random()*(W-margin*2);
+  this.y=floorTop+Math.random()*(H-floorTop-margin);
+  this.tx=this.x;this.ty=this.y;
+  this.state='idle';
+  this.timer=30+Math.floor(Math.random()*60);
+  this.facing=Math.random()>0.5?1:-1;
+  this.walkFrame=0;
+  this.speed=0.4+Math.random()*0.3;
+  // Assign workstation with jitter
+  var ws=stations[this.task]||stations.smithing;
+  this.homeX=ws.x+(Math.random()-0.5)*S*16;
+  this.homeY=ws.y+(Math.random()-0.5)*S*12;
+  // Clamp to bounds
+  this.homeX=Math.max(margin,Math.min(W-margin,this.homeX));
+  this.homeY=Math.max(floorTop,Math.min(H-margin,this.homeY));
+  this.atWork=false;
+}
+AgentEntity.prototype.update=function(){
+  var ts=16*S,margin=S*14,floorTop=ts*2+S*22;
+  if(this.state==='idle'){
+    this.timer--;
+    if(this.timer<=0){
+      // Alternate: go to workstation or wander
+      if(!this.atWork&&Math.random()<0.65){
+        this.tx=this.homeX;this.ty=this.homeY;this.atWork=true;
+      }else{
+        this.tx=margin+Math.random()*(this.W-margin*2);
+        this.ty=floorTop+Math.random()*(this.H-floorTop-margin);
+        this.atWork=false;
+      }
+      this.state='walking';this.facing=this.tx>this.x?1:-1;
+    }
+  }else if(this.state==='walking'){
+    var dx=this.tx-this.x,dy=this.ty-this.y,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<3){
+      this.state=this.atWork?'working':'idle';
+      this.timer=this.atWork?(180+Math.floor(Math.random()*240)):(60+Math.floor(Math.random()*120));
+    }else{
+      this.x+=dx/dist*this.speed;this.y+=dy/dist*this.speed;
+      this.facing=dx>0?1:-1;this.walkFrame++;
+    }
+  }else if(this.state==='working'){
+    this.timer--;
+    if(this.timer<=0){this.state='idle';this.timer=40+Math.floor(Math.random()*80);this.atWork=false}
+  }
+};
+
+// ─── Tavern Scene ───────────────────────────────────────────
 function TavernScene(canvasId,tipId){
-  this.canvas=document.getElementById(canvasId);
-  this.tip=document.getElementById(tipId);
-  this.ctx=this.canvas.getContext('2d');
-  this.agents=[];
-  this.agentPositions=[];
-  this.frame=0;
-  this.animId=null;
-  this.W=0;this.H=0;
+  this.canvas=document.getElementById(canvasId);this.tip=document.getElementById(tipId);
+  this.ctx=this.canvas.getContext('2d');this.entities=[];this.frame=0;this.animId=null;this.W=0;this.H=0;
+  this._agentKey='';this.stations={};
   var self=this;
   this.canvas.addEventListener('mousemove',function(e){self.onMouse(e)});
   this.canvas.addEventListener('mouseleave',function(){self.tip.style.display='none'});
 }
 TavernScene.prototype.setAgents=function(agents){
-  this.agents=agents;this.layout();this.draw();
+  var key=agents.map(function(a){return a.name+':'+a.count}).join(',');
+  if(key===this._agentKey)return;this._agentKey=key;this.resize();
+  this.stations=layoutWorkstations(this.W,this.H);
+  this.entities=[];
+  for(var i=0;i<agents.length;i++) this.entities.push(new AgentEntity(agents[i],this.W,this.H,this.stations));
+  this.startAnimation();
 };
-TavernScene.prototype.layout=function(){
-  var rect=this.canvas.parentElement.getBoundingClientRect();
-  var dpr=window.devicePixelRatio||1;
-  // Determine canvas size based on agent count
-  var rows=Math.ceil(this.agents.length/6)||1;
-  var h=Math.max(200, 140+rows*55);
+TavernScene.prototype.resize=function(){
+  var rect=this.canvas.parentElement.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+  var h=Math.max(300,240+Math.ceil(this.entities.length/5)*35);
   this.W=Math.floor(rect.width);this.H=h;
   this.canvas.width=this.W*dpr;this.canvas.height=this.H*dpr;
-  this.canvas.style.height=this.H+'px';
-  this.ctx.setTransform(dpr,0,0,dpr,0,0);
-  // Position agents
-  this.agentPositions=[];
-  var ts=16*S;
-  var startY=ts*2+S*28;
-  var perRow=Math.max(2,Math.floor((this.W-S*20)/(S*22)));
-  for(var i=0;i<this.agents.length;i++){
-    var row=Math.floor(i/perRow);
-    var col=i%perRow;
-    var totalInRow=Math.min(perRow,this.agents.length-row*perRow);
-    var rowWidth=totalInRow*S*22;
-    var startX=(this.W-rowWidth)/2+S*8;
-    var ax=startX+col*S*22;
-    var ay=startY+row*S*50;
-    this.agentPositions.push({x:ax,y:ay,w:8*S,h:12*S,agent:this.agents[i]});
-  }
+  this.canvas.style.height=this.H+'px';this.ctx.setTransform(dpr,0,0,dpr,0,0);
 };
 TavernScene.prototype.draw=function(){
-  var ctx=this.ctx;
-  ctx.clearRect(0,0,this.W,this.H);
+  var ctx=this.ctx;ctx.clearRect(0,0,this.W,this.H);this.frame++;
+  for(var i=0;i<this.entities.length;i++) this.entities[i].update();
   drawTavernBG(ctx,this.W,this.H,this.frame);
-  // Draw agents
-  for(var i=0;i<this.agentPositions.length;i++){
-    var ap=this.agentPositions[i];
-    var a=ap.agent;
-    var ch=getAgentChar(a.name);
+  // Tables
+  var ts=16*S,tY=ts*2+S*50,tCols=Math.max(2,Math.floor(this.W/(S*70)));
+  for(var tc=0;tc<tCols;tc++){var tx=S*35+tc*((this.W-S*70)/Math.max(1,tCols-1));if(tY<this.H-S*20)drawTable(ctx,tx,tY);if(tY+S*50<this.H-S*20)drawTable(ctx,tx,tY+S*50)}
+  drawBarrel(ctx,S*5,this.H-S*18);drawBarrel(ctx,S*12,this.H-S*15);
+  drawBarrel(ctx,this.W-S*16,this.H-S*18);drawBarrel(ctx,this.W-S*9,this.H-S*15);
+  // Sort by Y depth
+  var sorted=this.entities.slice().sort(function(a,b){return a.y-b.y});
+  for(var i=0;i<sorted.length;i++){
+    var e=sorted[i];
     // Shadow
-    ctx.fillStyle='rgba(0,0,0,0.3)';
-    ctx.beginPath();ctx.ellipse(ap.x+S*4,ap.y+S*13,S*4,S*1.5,0,0,Math.PI*2);ctx.fill();
-    // Character
-    drawSprite(ctx,ch.type,ap.x,ap.y,S,this.frame+i*20);
-    // Name tag
-    ctx.fillStyle='rgba(0,0,0,0.6)';
-    var label=a.name.replace('rex-','').replace('compound-engineering:','').replace('pr-review-toolkit:','');
-    if(label.length>14)label=label.substring(0,13)+'\u2026';
-    var tw=ctx.measureText?6*label.length:60;
-    ctx.fillRect(ap.x+S*4-tw/2-3,ap.y-S*3,tw+6,10);
-    ctx.fillStyle='#e2e4f0';ctx.font='8px monospace';ctx.textAlign='center';
-    ctx.fillText(label,ap.x+S*4,ap.y-S*3+8);
-    ctx.textAlign='left';
-    // Count badge
-    if(a.count>1){
-      ctx.fillStyle='#7c6aef';
-      ctx.beginPath();ctx.arc(ap.x+S*8+2,ap.y,6,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#fff';ctx.font='bold 7px monospace';ctx.textAlign='center';
-      ctx.fillText(a.count>99?'99+':a.count+'',ap.x+S*8+2,ap.y+2.5);ctx.textAlign='left';
+    ctx.fillStyle='rgba(0,0,0,0.2)';ctx.beginPath();ctx.ellipse(e.x+S*5,e.y+S*16.5,S*5,S*1.5,0,0,Math.PI*2);ctx.fill();
+    // Task prop (draw behind character when working)
+    if(e.state==='working'){
+      var propX=e.facing>0?e.x+S*11:e.x-S*8;
+      drawTaskProp(ctx,e.task,propX,e.y+S*2,S,this.frame+i*20);
     }
+    // Character (with outline)
+    drawCreature(ctx,e.char.type,e.x,e.y,S,this.frame+i*17,e.state,e.facing);
+    // Name tag
+    var label=e.data.name.replace('rex-','').replace('compound-engineering:','ce:').replace('pr-review-toolkit:','pr:');
+    if(label.length>16)label=label.substring(0,15)+'\u2026';
+    ctx.font='8px monospace';var tw=ctx.measureText(label).width;
+    ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(e.x+S*5-tw/2-3,e.y-S*3,tw+6,11);
+    ctx.fillStyle='#e2e4f0';ctx.textAlign='center';ctx.fillText(label,e.x+S*5,e.y-S*3+8);ctx.textAlign='left';
+    // State indicator
+    if(e.state==='working'){ctx.fillStyle='#f1c40f';ctx.font='7px monospace';ctx.textAlign='center';ctx.fillText('\u2692',e.x+S*5,e.y-S*5);ctx.textAlign='left'}
+    // Count badge
+    if(e.data.count>1){ctx.fillStyle='#7c6aef';ctx.beginPath();ctx.arc(e.x+S*10,e.y-S*1,7,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 7px monospace';ctx.textAlign='center';ctx.fillText(e.data.count>99?'99+':e.data.count+'',e.x+S*10,e.y-S*1+2.5);ctx.textAlign='left'}
   }
+  // Vignette
+  var vig=ctx.createRadialGradient(this.W/2,this.H*0.4,this.W*0.15,this.W/2,this.H*0.4,this.W*0.8);
+  vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,'rgba(0,0,0,0.22)');ctx.fillStyle=vig;ctx.fillRect(0,0,this.W,this.H);
 };
-TavernScene.prototype.startAnimation=function(){
-  var self=this;
-  function tick(){self.frame++;self.draw();self.animId=requestAnimationFrame(tick)}
-  if(!self.animId) tick();
-};
-TavernScene.prototype.stopAnimation=function(){
-  if(this.animId){cancelAnimationFrame(this.animId);this.animId=null}
-};
+TavernScene.prototype.startAnimation=function(){var self=this;function t(){self.draw();self.animId=requestAnimationFrame(t)}if(!self.animId)t()};
+TavernScene.prototype.stopAnimation=function(){if(this.animId){cancelAnimationFrame(this.animId);this.animId=null}};
 TavernScene.prototype.onMouse=function(e){
-  var rect=this.canvas.getBoundingClientRect();
-  var mx=e.clientX-rect.left;
-  var my=e.clientY-rect.top;
-  for(var i=0;i<this.agentPositions.length;i++){
-    var ap=this.agentPositions[i];
-    if(mx>=ap.x-S*2&&mx<=ap.x+ap.w+S*2&&my>=ap.y-S*4&&my<=ap.y+ap.h+S*2){
-      var a=ap.agent;var ch=getAgentChar(a.name);
-      var tipEl=this.tip;
-      tipEl.style.display='block';
-      tipEl.style.left=Math.min(mx+12,this.W-150)+'px';
-      tipEl.style.top=(my-30)+'px';
-      tipEl.replaceChildren();
-      var nameSpan=document.createElement('span');nameSpan.className='tt-name';nameSpan.textContent=a.name;
-      var countSpan=document.createElement('span');countSpan.className='tt-count';countSpan.textContent=a.count?a.count+'x':'';
-      var roleDiv=document.createElement('div');roleDiv.className='tt-role';roleDiv.textContent=ch.label+(a.background?' | '+a.background+' background':'');
-      tipEl.appendChild(nameSpan);tipEl.appendChild(countSpan);tipEl.appendChild(roleDiv);
-      return;
+  var rect=this.canvas.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  for(var i=0;i<this.entities.length;i++){var ent=this.entities[i];
+    if(mx>=ent.x-S*2&&mx<=ent.x+S*12&&my>=ent.y-S*4&&my<=ent.y+S*18){
+      this.tip.style.display='block';this.tip.style.left=Math.min(mx+12,this.W-170)+'px';this.tip.style.top=(my-35)+'px';
+      this.tip.replaceChildren();
+      var ns=document.createElement('span');ns.className='tt-name';ns.textContent=ent.data.name;
+      var cs=document.createElement('span');cs.className='tt-count';cs.textContent=ent.data.count?ent.data.count+'x':'';
+      var rd=document.createElement('div');rd.className='tt-role';
+      var stateLabel={idle:'Idle',walking:'Walking',working:'Working: '+ent.task};
+      rd.textContent=ent.char.label+' \u2022 '+stateLabel[ent.state];
+      this.tip.appendChild(ns);this.tip.appendChild(cs);this.tip.appendChild(rd);return;
     }
   }
   this.tip.style.display='none';
 };
 
-// Tavern instances
-var liveTavern=null, arsenalTavern=null;
-
-function updateLiveTavern(agentCalls){
-  var agents=Object.entries(agentCalls||{}).map(function(e){return{name:e[0],count:e[1].count,background:e[1].background||0}}).sort(function(a,b){return b.count-a.count});
-  if(!liveTavern) liveTavern=new TavernScene('liveTavern','liveTavernTip');
+var liveTavern=null,arsenalTavern=null;
+function updateLiveTavern(ac){
+  var agents=Object.entries(ac||{}).map(function(e){return{name:e[0],count:e[1].count,background:e[1].background||0}}).sort(function(a,b){return b.count-a.count});
+  if(!liveTavern)liveTavern=new TavernScene('liveTavern','liveTavernTip');
   liveTavern.setAgents(agents);
-  liveTavern.startAnimation();
 }
-function updateArsenalTavern(topAgents){
-  if(!arsenalTavern) arsenalTavern=new TavernScene('arsenalTavern','arsenalTavernTip');
-  arsenalTavern.setAgents(topAgents||[]);
-  arsenalTavern.startAnimation();
+function updateArsenalTavern(ta){
+  if(!arsenalTavern)arsenalTavern=new TavernScene('arsenalTavern','arsenalTavernTip');
+  arsenalTavern.setAgents(ta||[]);
 }
 
 // ═══════════════════════════════════════════════════════════════
