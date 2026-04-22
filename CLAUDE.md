@@ -65,6 +65,31 @@ These rules govern when Claude automatically invokes orchestrators and agents wi
 
 ---
 
+## Shogun — Parallel Execution (ASK FIRST, NEVER AUTO-INVOKE)
+
+**Shogun runs with `--dangerously-skip-permissions`. NEVER auto-invoke. ALWAYS ask the user first.**
+
+**Suggest Shogun when ALL of these are true:**
+- The task can be decomposed into 3+ independent workstreams
+- Speed matters more than per-action review
+- The task does NOT touch: authentication, payments, credentials, secrets, or security-sensitive code
+- The user has already approved the general approach (e.g., via a plan)
+
+**How to suggest:**
+> "This task has [N] independent workstreams that could run in parallel. Want me to use Shogun for this? It runs 10 agents simultaneously in WSL but skips all permission prompts — only use it for trusted, non-sensitive work."
+
+**Never suggest Shogun for:**
+- Security audits or red-teaming (use rex-security / rex-redteam instead)
+- Anything touching `.env`, credentials, API keys, or secrets
+- Payment or auth code
+- Production deployments
+- Small focused tasks (subagents within Claude Code are sufficient)
+
+**Launch:** `wsl -d Ubuntu -u hgonz -- bash -lc 'cd ~/multi-agent-shogun && ./shutsujin_departure.sh'`
+**Connect:** `wsl -d Ubuntu -u hgonz -- bash -lc 'tmux attach -t shogun'`
+
+---
+
 ## Context Engineering
 
 **On compaction, always preserve:** modified file list, all test commands, current STATE.md contents, agent delegation context, and the active task list.
