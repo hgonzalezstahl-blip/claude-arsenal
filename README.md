@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/Plugins-23-blue?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Copilot_Skills-8-green?style=for-the-badge" />
   <img src="https://img.shields.io/badge/MCP_Servers-8-orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Hooks-14-red?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Hooks-15-red?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Rules-5-yellow?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Knowledge_RAG-Active-brightgreen?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Dashboard-Live-brightgreen?style=for-the-badge" />
@@ -11,13 +11,23 @@
 
 # Claude Arsenal
 
-> A production-grade multi-agent system for Claude Code — 39 specialized agents across 5 teams, 23 plugins, 14 lifecycle hooks, 8 MCP servers, a live session dashboard, semantic RAG knowledge vault, full audit trail, and a GitHub Copilot framework port. Engineering standards enforced automatically, every session.
+> A production-grade multi-agent system for Claude Code — 39 specialized agents across 5 teams, 23 plugins, 15 lifecycle hooks, 8 MCP servers, a live session dashboard, semantic RAG knowledge vault, full audit trail, Shogun parallel execution (10 agents via tmux), and a GitHub Copilot framework port. Engineering standards enforced automatically, every session.
 
 Built by [Hector Gonzalez-Stahl](https://github.com/hgonzalezstahl-blip)
 
 ---
 
 ## What's New
+
+### v4 — April 22, 2026 (Shogun Integration + Cleanup)
+
+| Change | Details |
+|:-------|:--------|
+| **Shogun parallel execution** | Safe launcher hook (`shogun-launch.sh`), WSL validation, sensitive file detection, audit logging. Runs 10 agents via tmux — never auto-invoked |
+| **Own Shogun repo** | Forked to [hgonzalezstahl-blip/multi-agent-shogun](https://github.com/hgonzalezstahl-blip/multi-agent-shogun) with upstream tracking. READMEs updated to v4.6, English-only |
+| **15 hooks** (was 14) | Added `shogun-launch.sh` — pre-launch safety checks for parallel execution |
+| **Runtime files untracked** | `settings.json` and `plugins/*.json` removed from git — they auto-update every session with timestamps/cache hashes, causing perpetual dirty state |
+| **CLAUDE.md Shogun repo link** | Points to owned repo with upstream reference |
 
 ### v3 — April 21, 2026 (Context Optimization + Audit System)
 
@@ -667,7 +677,7 @@ The same quality methodology, ported to GitHub Copilot as skill files. Drop into
 | **Monitoring** | 4 | Ctrl dashboard, claude-mem viewer, session reports, audit summary CLI |
 | **Shogun** | 10 | Parallel execution: 1 Shogun + 1 Karo + 7 Ashigaru + 1 Gunshi (WSL2/tmux) |
 | **Copilot Skills** | 8 | Same quality gates for GitHub Copilot |
-| | **39 agents + 23 plugins + 8 MCP servers + 14 hooks + Shogun + dashboard** | |
+| | **39 agents + 23 plugins + 8 MCP servers + 15 hooks + Shogun + dashboard** | |
 
 ---
 
