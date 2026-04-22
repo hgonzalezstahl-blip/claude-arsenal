@@ -579,6 +579,54 @@ knowledge/
 
 ---
 
+## Shogun — Parallel Execution Engine
+
+> 10 concurrent Claude Code sessions via WSL2 + tmux. Decomposes tasks into parallel workstreams with zero coordination overhead (YAML on disk, no API calls for coordination).
+
+**Security: Shogun runs with `--dangerously-skip-permissions`. It is NEVER auto-invoked — Claude always asks before launching.**
+
+### Formation
+
+```
+         You
+          │
+    ┌─────┴─────┐
+    │  Shogun   │  (Opus) — receives your commands
+    └─────┬─────┘
+          │
+    ┌─────┴─────┐
+    │   Karo    │  (Sonnet) — decomposes into subtasks
+    └─────┬─────┘
+          │
+    ┌─────┼─────┬─────┬─────┬─────┬─────┬─────┐
+    ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+   A1    A2    A3    A4    A5    A6    A7   Gunshi
+  (Sonnet — 7 parallel workers)           (Opus — QA)
+```
+
+### When Claude Suggests It
+
+Claude will suggest Shogun when a task has 3+ independent workstreams and doesn't touch security-sensitive code. You always decide.
+
+### Quick Reference
+
+| Action | Command |
+|:-------|:--------|
+| **Safe launch** | `bash ~/.claude/hooks/shogun-launch.sh /path/to/project` |
+| **Talk to Shogun** | `wsl -d Ubuntu -u hgonz -- bash -lc 'tmux attach -t shogun'` |
+| **Watch workers** | `wsl -d Ubuntu -u hgonz -- bash -lc 'tmux attach -t multiagent'` |
+| **Detach** | `Ctrl+B` then `D` |
+| **Kill everything** | `wsl -d Ubuntu -u hgonz -- bash -lc 'tmux kill-server'` |
+
+### Safety Boundaries
+
+- Pre-launch script scans for `.env`, credentials, and key files before starting
+- Never used for auth, payments, secrets, or production deployments
+- Every launch logged to `~/.claude/audit.log`
+- Kill switch: `tmux kill-server` stops all 10 agents instantly
+
+---
+
 ## Copilot Framework (8 Skills)
 
 The same quality methodology, ported to GitHub Copilot as skill files. Drop into any repo.
@@ -615,10 +663,11 @@ The same quality methodology, ported to GitHub Copilot as skill files. Drop into
 | **MCP Servers** | 8 | qmd RAG, jcodemunch, gitmcp, memory, pal-mcp, claude-mem, Playwright, Gamma |
 | **Hooks** | 14 | Audit trail, agent logging, context pressure, security, formatting, session reports |
 | **Rules** | 5 | Path-scoped conventions (Anthropic API, NestJS, React, Prisma, Rekaliber) |
-| **Knowledge Vault** | 11 | Semantic RAG indexed — ADRs, API docs, patterns, cost optimization |
+| **Knowledge Vault** | 12 | Semantic RAG indexed — ADRs, API docs, patterns, Shogun guide |
 | **Monitoring** | 4 | Ctrl dashboard, claude-mem viewer, session reports, audit summary CLI |
+| **Shogun** | 10 | Parallel execution: 1 Shogun + 1 Karo + 7 Ashigaru + 1 Gunshi (WSL2/tmux) |
 | **Copilot Skills** | 8 | Same quality gates for GitHub Copilot |
-| | **39 agents + 23 plugins + 8 MCP servers + 14 hooks + dashboard** | |
+| | **39 agents + 23 plugins + 8 MCP servers + 14 hooks + Shogun + dashboard** | |
 
 ---
 
