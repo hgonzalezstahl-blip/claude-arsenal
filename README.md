@@ -1,22 +1,36 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Agents-39-blueviolet?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Plugins-22-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Plugins-23-blue?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Copilot_Skills-8-green?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/MCP_Servers-6-orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Hooks-6-red?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Rules-4-yellow?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/MCP_Servers-8-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Hooks-14-red?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Rules-5-yellow?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Knowledge_RAG-Active-brightgreen?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Dashboard-Live-brightgreen?style=for-the-badge" />
 </p>
 
 # Claude Arsenal
 
-> A production-grade multi-agent system for Claude Code — 39 specialized agents across 5 teams, 22 plugins, lifecycle hooks, a live session dashboard, path-scoped rules, a RAG knowledge vault, and a GitHub Copilot framework port. Engineering standards enforced automatically, every session.
+> A production-grade multi-agent system for Claude Code — 39 specialized agents across 5 teams, 23 plugins, 14 lifecycle hooks, 8 MCP servers, a live session dashboard, semantic RAG knowledge vault, full audit trail, and a GitHub Copilot framework port. Engineering standards enforced automatically, every session.
 
 Built by [Hector Gonzalez-Stahl](https://github.com/hgonzalezstahl-blip)
 
 ---
 
 ## What's New
+
+### v3 — April 21, 2026 (Context Optimization + Audit System)
+
+| Change | Details |
+|:-------|:--------|
+| **8 MCP servers** (was 6) | Added `qmd` (semantic RAG), `jcodemunch` (AST code exploration), `gitmcp` (real GitHub data), `memory` (persistent memory), `pal-mcp` (multi-model access), `claude-mem` (session history) |
+| **Knowledge RAG active** | `qmd` indexes `knowledge/` with BM25 + vector embeddings + LLM reranking. 11 docs, 12 chunks. Re-index: `qmd update && qmd embed` |
+| **Full audit system** | 14 hooks (was 8): `agent-audit.js` logs every agent spawn, `tool-audit.js` logs every tool call, `session-report.js` generates per-session token/cost reports, `truncate-large-output.sh` alerts on context pressure |
+| **Audit summary CLI** | `node ~/.claude/hooks/audit-summary.js [days]` — agent usage by type, tool breakdown, token estimates, cost tracking |
+| **Anthropic API optimization rule** | Auto-loads on any file matching `*anthropic*`, `*llm*service*`, `*claude*provider*`. Enforces prompt caching, batch API, token tracking, model selection |
+| **Pixel Agents + Ctrl** | Visual agent monitoring via pixel art characters. Ctrl daemon provides real-time token/cost tracking at `ctrl.bulletproof.sh` |
+| **claude-mem plugin** | AI-compressed searchable session history across all past conversations. View at `http://localhost:37777`, search with `/mem-search` |
+| **23 plugins** (was 22) | Added `claude-mem` for persistent session memory |
 
 ### v2.1 — April 20, 2026 (Depth Update)
 
@@ -441,23 +455,30 @@ Scout proactively maps the competitive landscape and surfaces opportunities and 
 
 ## Infrastructure Layer
 
-### Lifecycle Hooks
+### Lifecycle Hooks (14)
 
-| Event | What It Does |
-|:------|:-------------|
-| `SessionStart` | Starts the live dashboard server + opens browser |
-| `PreToolUse` -> Edit/Write | Blocks edits to `.env`, credentials, secrets, private keys |
-| `PreToolUse` -> Edit/Write | TDD warning when writing implementation without tests |
-| `PostToolUse` -> Read | Prompt injection detection in file content |
-| `PostToolUse` -> Edit/Write | Auto-formats with Prettier on every file change |
-| `PostToolUse` -> Bash | Audit logs every command to `~/.claude/audit.log` |
-| `Stop` | Session end summary logged for tracking |
-| `Notification` | Windows popup when Claude needs attention |
+| Event | Hook | What It Does |
+|:------|:-----|:-------------|
+| `SessionStart` | `dashboard-launch.sh` | Starts the live dashboard server + opens browser |
+| `PreToolUse` | `protect-sensitive-files.sh` | Blocks edits to `.env`, credentials, secrets, private keys |
+| `PreToolUse` | `tdd-enforcement.sh` | TDD warning when writing implementation without tests |
+| `PreToolUse` | `agent-audit.js` | Logs every Agent spawn with type, prompt, model |
+| `PostToolUse` | `detect-prompt-injection.sh` | Prompt injection detection in file content (11+ patterns) |
+| `PostToolUse` | `truncate-large-output.sh` | Context pressure alerts at ~8K tokens, strong alerts at ~20K |
+| `PostToolUse` | `tool-audit.js` | Logs every tool call with input summary and result token estimate |
+| `PostToolUse` | `agent-audit.js` | Logs agent results with size and token estimate |
+| `PostToolUse` | `auto-format.sh` | Auto-formats with Prettier on every file change |
+| `PostToolUse` | `audit-log.sh` | Audit logs every bash command to `~/.claude/audit.log` |
+| `Stop` | `session-end.sh` | Session end summary logged for tracking |
+| `Stop` | `session-report.js` | Per-session token/cost report from transcript |
+| `Notification` | `notify-windows.sh` | Windows popup when Claude needs attention |
+| Various | Ctrl HTTP hooks | Real-time agent visualization at `ctrl.bulletproof.sh` |
 
 ### Path-Scoped Rules (Auto-Load)
 
 | Rule File | Triggers On | What It Enforces |
 |:----------|:-----------|:-----------------|
+| `anthropic-api-optimization.md` | `*anthropic*`, `*llm*service*`, `*claude*provider*` | Prompt caching, batch API, token tracking, model selection |
 | `rekaliber-protocol.md` | `rekaliber/**` | 7-section feature protocol, API contracts, module isolation |
 | `nestjs-backend.md` | `*.service.ts`, `*.controller.ts`, `*.dto.ts` | Controller->Service pattern, DI, response format |
 | `frontend-react.md` | `*.tsx`, `*.jsx`, `components/**` | Service layer, TanStack Query, shadcn/ui, App Router |
@@ -501,40 +522,60 @@ Scout proactively maps the competitive landscape and surfaces opportunities and 
 </details>
 
 <details>
-<summary><b>Community (1)</b></summary>
+<summary><b>Community (2)</b></summary>
 
 | Plugin | What It Does |
 |:-------|:-------------|
 | `compound-engineering` | Cross-session learning, Figma verification, Slack context search |
+| `claude-mem` | AI-compressed searchable session history across all past conversations |
 </details>
 
-### MCP Servers
+### MCP Servers (8 Active)
 
 | Server | Purpose | Status |
 |:-------|:--------|:------:|
+| `qmd` | Semantic RAG over knowledge vault (BM25 + vector + reranker) | Active |
+| `jcodemunch` | AST-based code exploration via tree-sitter (~80% fewer tokens) | Active |
+| `gitmcp` | Real GitHub repo data — prevents hallucinated API signatures | Active |
+| `memory` | Official Anthropic persistent structured memory | Active |
+| `pal-mcp` | Multi-model access (Gemini, GPT, OpenRouter, Ollama) | Active |
+| `claude-mem` | AI-compressed session history search | Active |
 | Playwright | Browser automation and E2E testing | Active |
 | Gamma | AI presentations and documents | Active |
-| GitHub MCP | Issues, PRs, CI/CD, releases | Active |
-| Prisma MCP | Database management via natural language | Active |
-| Sentry MCP | Production error tracking and analysis | Active |
-| Context Portal | Persistent project knowledge graph | Active |
 
-### Knowledge Vault (3-Tier RAG Architecture)
+### Knowledge Vault (Semantic RAG via qmd)
 
 | Tier | Location | Loading | Purpose |
 |:-----|:---------|:--------|:--------|
 | **L1** | `MEMORY.md` | Always loaded | Index, pointers, critical rules |
 | **L2** | `memory/*.md` | On demand | Project summaries, patterns |
-| **L3** | `knowledge/` | Via RAG MCP | Deep reference docs, ADRs, API specs |
+| **L3** | `knowledge/` | Via qmd RAG | Deep reference docs, ADRs, API specs |
+
+The knowledge vault is indexed by `qmd` with BM25 full-text + vector semantic search + LLM reranking. All local, no external APIs.
+
+```bash
+# Re-index after adding knowledge files
+qmd update && qmd embed
+```
 
 ```
 knowledge/
 ├── sources/      <- Raw notes, articles, snippets
 ├── wiki/         <- LLM-compiled concept pages
-├── decisions/    <- Architecture Decision Records
-├── apis/         <- API documentation & contracts
-└── patterns/     <- Code patterns & conventions
+├── decisions/    <- Architecture Decision Records (3 ADRs)
+├── apis/         <- API documentation & contracts (Prisma, Stripe)
+└── patterns/     <- Code patterns & conventions (5 patterns incl. cost optimization)
 ```
+
+### Monitoring & Audit
+
+| Tool | Access | What It Shows |
+|:-----|:-------|:-------------|
+| **Ctrl Dashboard** | `npx @bulletproof-sh/ctrl-daemon@latest` then open `ctrl.bulletproof.sh` | Real-time pixel office, token costs per turn, tool call timing |
+| **claude-mem** | `http://localhost:37777` | AI-compressed session history, searchable via `/mem-search` |
+| **Session Reports** | `~/.claude/session-reports/` | Per-session JSON: agent counts, tool counts, tokens, costs |
+| **Audit Summary** | `node ~/.claude/hooks/audit-summary.js [days]` | Weekly roll-up: agents by type, tools, tokens, large outputs |
+| **Live Dashboard** | `http://localhost:3333` | Multi-session monitor with context window gauge |
 
 ---
 
@@ -570,12 +611,14 @@ The same quality methodology, ported to GitHub Copilot as skill files. Drop into
 | **Vault** (finance) | 4 | Revenue modeling, market sizing, pricing, fundraising, audit |
 | **General** | 5 | Planning, agent review, self-improvement, simulation, intelligence |
 | **Dashboard** | 1 | Live multi-session monitor with token/cost/context tracking |
-| **Plugins** | 22 | Security auditing, code review, testing, session intelligence |
-| **MCP Servers** | 6 | GitHub, Prisma, Sentry, Playwright, Gamma, Context Portal |
-| **Hooks** | 6 | Dashboard launch, file protection, TDD, prompt injection detection, auto-format, audit logging |
-| **Rules** | 4 | Path-scoped conventions (NestJS, React, Prisma, Rekaliber) |
+| **Plugins** | 23 | Security auditing, code review, testing, session memory |
+| **MCP Servers** | 8 | qmd RAG, jcodemunch, gitmcp, memory, pal-mcp, claude-mem, Playwright, Gamma |
+| **Hooks** | 14 | Audit trail, agent logging, context pressure, security, formatting, session reports |
+| **Rules** | 5 | Path-scoped conventions (Anthropic API, NestJS, React, Prisma, Rekaliber) |
+| **Knowledge Vault** | 11 | Semantic RAG indexed — ADRs, API docs, patterns, cost optimization |
+| **Monitoring** | 4 | Ctrl dashboard, claude-mem viewer, session reports, audit summary CLI |
 | **Copilot Skills** | 8 | Same quality gates for GitHub Copilot |
-| | **39 agents + 22 plugins + 8 skills + dashboard** | |
+| | **39 agents + 23 plugins + 8 MCP servers + 14 hooks + dashboard** | |
 
 ---
 
