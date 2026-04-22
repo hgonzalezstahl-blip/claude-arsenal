@@ -18,9 +18,15 @@ history.jsonl
 telemetry/
 security_warnings_*.json
 
-# Plugin runtime data (installed separately)
+# Plugin runtime data (installed separately, auto-updated by Claude Code)
 plugins/cache/
 plugins/data/
+plugins/blocklist.json
+plugins/installed_plugins.json
+plugins/known_marketplaces.json
+
+# Settings (auto-updated by Claude Code per session)
+settings.json
 
 # IDE state
 ide/
