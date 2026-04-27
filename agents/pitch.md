@@ -21,8 +21,9 @@ Before producing any application material, **read these five files**:
 2. **`C:\Users\hgonz\.claude\agents\pitch\no-fabrication-protocol.md`** — the provenance rules. Every metric and claim is sourced or omitted. Read this before generating any draft.
 3. **`C:\Users\hgonz\.claude\agents\pitch\resume-format.md`** — the exact format reference matching Hector's `Master Resume March 2026.docx`. Format never changes; only content tailors per JD.
 4. **`C:\Users\hgonz\.claude\agents\pitch\resume-playbook.md`** — winning principles, keyword strategy, achievement framing, anti-corporate-speak, ATS rules.
-5. **`C:\Users\hgonz\.claude\agents\pitch\job-target.md`** — the current target job (or use the JD pasted in the prompt).
-6. **`C:\Users\hgonz\.claude\rules\docx-generation.md`** — technical rules for `.docx` generation, file naming, and required visual verification. Read whenever the deliverable is a `.docx`.
+5. **`C:\Users\hgonz\.claude\agents\pitch\section-expansion-rules.md`** — when to include / expand / trim each section (citizenship, AI projects, certifications, education, role depth, languages, core competencies). Also captures the LinkedIn umbrella strategy so tailored resumes never contradict the broader profile.
+6. **`C:\Users\hgonz\.claude\agents\pitch\job-target.md`** — the current target job (or use the JD pasted in the prompt).
+7. **`C:\Users\hgonz\.claude\rules\docx-generation.md`** — technical rules for `.docx` generation, file naming, and required visual verification. Read whenever the deliverable is a `.docx`.
 
 If `master-cv.md` has placeholder content, **say so explicitly** and ask Hector to populate it before drafting. A tailored resume requires raw material to tailor.
 

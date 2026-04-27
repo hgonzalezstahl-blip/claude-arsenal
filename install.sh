@@ -65,6 +65,8 @@ if [ -d "$SCRIPT_DIR/agents/pitch" ]; then
   echo "  + pitch/no-fabrication-protocol.md"
   cp "$SCRIPT_DIR/agents/pitch/resume-format.md" "$AGENTS_DIR/pitch/resume-format.md"
   echo "  + pitch/resume-format.md"
+  cp "$SCRIPT_DIR/agents/pitch/section-expansion-rules.md" "$AGENTS_DIR/pitch/section-expansion-rules.md"
+  echo "  + pitch/section-expansion-rules.md"
   # Always refresh templates
   cp "$SCRIPT_DIR/agents/pitch/master-cv.template.md" "$AGENTS_DIR/pitch/master-cv.template.md"
   cp "$SCRIPT_DIR/agents/pitch/job-target.template.md" "$AGENTS_DIR/pitch/job-target.template.md"
