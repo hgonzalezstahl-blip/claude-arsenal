@@ -54,3 +54,7 @@ tools/
 
 # Echo personal voice profile (samples stay local, never pushed)
 agents/echo/style-profile.md
+
+# Pitch personal career data (master CV + active job target stay local)
+agents/pitch/master-cv.md
+agents/pitch/job-target.md

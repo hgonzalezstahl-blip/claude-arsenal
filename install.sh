@@ -50,6 +50,37 @@ if [ -d "$SCRIPT_DIR/agents/echo" ]; then
   fi
 fi
 
+# Install Pitch (resume + cover letter agent) — agent + reference subfolder
+echo ""
+echo "Installing Pitch (resume tailoring)..."
+if [ -f "$SCRIPT_DIR/agents/pitch.md" ]; then
+  cp "$SCRIPT_DIR/agents/pitch.md" "$AGENTS_DIR/pitch.md"
+  echo "  + pitch.md"
+fi
+if [ -d "$SCRIPT_DIR/agents/pitch" ]; then
+  mkdir -p "$AGENTS_DIR/pitch"
+  cp "$SCRIPT_DIR/agents/pitch/resume-playbook.md" "$AGENTS_DIR/pitch/resume-playbook.md"
+  echo "  + pitch/resume-playbook.md"
+  # Always refresh templates
+  cp "$SCRIPT_DIR/agents/pitch/master-cv.template.md" "$AGENTS_DIR/pitch/master-cv.template.md"
+  cp "$SCRIPT_DIR/agents/pitch/job-target.template.md" "$AGENTS_DIR/pitch/job-target.template.md"
+  echo "  + pitch/master-cv.template.md"
+  echo "  + pitch/job-target.template.md"
+  # Seed the personal files only if they don't exist (never overwrite real CV / active application)
+  if [ ! -f "$AGENTS_DIR/pitch/master-cv.md" ]; then
+    cp "$SCRIPT_DIR/agents/pitch/master-cv.template.md" "$AGENTS_DIR/pitch/master-cv.md"
+    echo "  + pitch/master-cv.md (seeded from template — fill in your career history)"
+  else
+    echo "  = pitch/master-cv.md (preserved — your career history is safe)"
+  fi
+  if [ ! -f "$AGENTS_DIR/pitch/job-target.md" ]; then
+    cp "$SCRIPT_DIR/agents/pitch/job-target.template.md" "$AGENTS_DIR/pitch/job-target.md"
+    echo "  + pitch/job-target.md (seeded from template — overwrite per application)"
+  else
+    echo "  = pitch/job-target.md (preserved)"
+  fi
+fi
+
 # Install slash commands
 COMMANDS_DIR="${CLAUDE_DIR}/commands"
 if [ -d "$SCRIPT_DIR/commands" ]; then
