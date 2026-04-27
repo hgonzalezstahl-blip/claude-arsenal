@@ -61,6 +61,10 @@ if [ -d "$SCRIPT_DIR/agents/pitch" ]; then
   mkdir -p "$AGENTS_DIR/pitch"
   cp "$SCRIPT_DIR/agents/pitch/resume-playbook.md" "$AGENTS_DIR/pitch/resume-playbook.md"
   echo "  + pitch/resume-playbook.md"
+  cp "$SCRIPT_DIR/agents/pitch/no-fabrication-protocol.md" "$AGENTS_DIR/pitch/no-fabrication-protocol.md"
+  echo "  + pitch/no-fabrication-protocol.md"
+  cp "$SCRIPT_DIR/agents/pitch/resume-format.md" "$AGENTS_DIR/pitch/resume-format.md"
+  echo "  + pitch/resume-format.md"
   # Always refresh templates
   cp "$SCRIPT_DIR/agents/pitch/master-cv.template.md" "$AGENTS_DIR/pitch/master-cv.template.md"
   cp "$SCRIPT_DIR/agents/pitch/job-target.template.md" "$AGENTS_DIR/pitch/job-target.template.md"
