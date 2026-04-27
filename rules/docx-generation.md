@@ -30,24 +30,24 @@
 
 ```python
 def add_apa_reference(doc, parts):
-    """parts: list of (text, italic_bool) tuples in order"""
-    p = doc.add_paragraph()
-    p.paragraph_format.first_line_indent = Inches(-0.4)
-    p.paragraph_format.left_indent = Inches(0.4)
-    for text, italic in parts:
-        run = p.add_run(text)
-        run.italic = italic
-        run.font.size = Pt(10.5)
+ """parts: list of (text, italic_bool) tuples in order"""
+ p = doc.add_paragraph()
+ p.paragraph_format.first_line_indent = Inches(-0.4)
+ p.paragraph_format.left_indent = Inches(0.4)
+ for text, italic in parts:
+ run = p.add_run(text)
+ run.italic = italic
+ run.font.size = Pt(10.5)
 ```
 
 **Worked example — Wong et al. 2021:**
 
 ```python
 add_apa_reference(doc, [
-    ("Wong, A., Otles, E., Donnelly, J. P., Krumm, A., et al. (2021). External validation of a widely implemented proprietary sepsis prediction model in hospitalized patients. ", False),
-    ("JAMA Internal Medicine, ", True),
-    ("181", True),
-    ("(8), 1065–1070. https://doi.org/10.1001/jamainternmed.2021.2626", False),
+ ("Wong, A., Otles, E., Donnelly, J. P., Krumm, A., et al. (2021). External validation of a widely implemented proprietary sepsis prediction model in hospitalized patients. ", False),
+ ("JAMA Internal Medicine, ", True),
+ ("181", True),
+ ("(8), 1065–1070. https://doi.org/10.1001/jamainternmed.2021.2626", False),
 ])
 ```
 
@@ -130,10 +130,10 @@ This is especially important for inserted sections (a new appendix, a new callou
 
 **Rule:** All output files (Word documents, PDFs, markdown deliverables, generated artifacts) use **spaces, not underscores**, between words in the filename.
 
-Correct: `Final Policy Brief V4 Gonzalez-Stahl.docx`
-Wrong: `Final_Policy_Brief_V4_Gonzalez-Stahl.docx`
+Correct: `Final Policy Brief V4 [LastName].docx`
+Wrong: `Final_Policy_Brief_V4_[LastName].docx`
 
-Hyphens are fine where they're part of a name (`Gonzalez-Stahl`). Underscores are reserved for code files (Python modules, scripts) where they're syntactically required.
+Hyphens are fine where they're part of a name (`[LastName]`). Underscores are reserved for code files (Python modules, scripts) where they're syntactically required.
 
 This rule applies to filenames the user will see in Downloads, on their desktop, or anywhere they interact with the file outside of code. It does not apply to internal config files, scripts, or git-tracked source code.
 
@@ -166,4 +166,4 @@ These are patterns that were praised in human review and should be the default g
 
 ## CHANGE LOG
 
-- **2026-04-26** — File created from Hector's V4 policy brief review. Rules 1–7 added.
+- **2026-04-26** — File created from the user's V4 policy brief review. Rules 1–7 added.

@@ -21,18 +21,18 @@ The resume and LinkedIn play different roles:
 
 - **Default: omit from resume.** U.S. norm. Application portals handle work-auth as a separate field.
 - **Include when:**
-  - JD explicitly states "U.S. citizens only" / "must have clearance" / "must be authorized"
-  - Role is government, defense, federal contractor, or any clearance-track position
-  - JD is for a regulated industry where work-auth is a hard filter (some banking, defense fintech, gov consulting)
+ - JD explicitly states "U.S. citizens only" / "must have clearance" / "must be authorized"
+ - Role is government, defense, federal contractor, or any clearance-track position
+ - JD is for a regulated industry where work-auth is a hard filter (some banking, defense fintech, gov consulting)
 - **Where to put it when included:** one short line near the bottom or under "Additional" — never at the top.
 
-For Hector specifically: U.S. citizen. Surface only when the JD requires it.
+Specifically: U.S. citizen. Surface only when the JD requires it.
 
 ---
 
 ## SELECTED APPLIED AI PROJECTS — when to include / expand
 
-This section is Hector's biggest differentiator. Most process-engineering candidates don't ship their own AI tools. He does. But it's not always the right move to feature them prominently.
+This section is the user's biggest differentiator. Most process-engineering candidates don't ship their own AI tools. He does. But it's not always the right move to feature them prominently.
 
 ### Include and expand the AI projects section when:
 - JD mentions GenAI, LLMs, AI implementation, AI/ML, machine learning, automation, digital transformation, intelligent automation, AI-enabled workflows
@@ -40,7 +40,7 @@ This section is Hector's biggest differentiator. Most process-engineering candid
 - Role is at the intersection of operations and AI (AI Operations, AI Program Manager, Applied AI, AI Implementation Lead)
 - Role is at a senior IC or principal level where shipped portfolio matters
 - The JD asks for "examples of AI projects you have built"
-- Hector is competing against non-builder candidates and needs to differentiate
+- the user is competing against non-builder candidates and needs to differentiate
 
 In these cases, expand to 3–5 AI projects, with one or two sentences of substance per project (problem solved + tech stack + outcome).
 
@@ -51,7 +51,7 @@ In these cases, expand to 3–5 AI projects, with one or two sentences of substa
 - Role is sales / business development / customer-facing where AI projects are noise
 - JD explicitly downweights side projects ("focus on enterprise experience")
 
-In these cases, drop the section entirely or compress to a single line in Technical Skills ("Built and ship AI tooling — see linkedin.com/in/hector-gonz/projects").
+In these cases, drop the section entirely or compress to a single line in Technical Skills ("Built and ship AI tooling — see linkedin.com/in/[your-handle]/projects").
 
 ### When in between, default to "include 2 projects":
 The current Master Resume baseline is 2 projects (LeanLogic.org + Google Sheets Accounting Automation). That's a safe default for most mid-to-senior tech-adjacent applications.
@@ -60,7 +60,7 @@ The current Master Resume baseline is 2 projects (LeanLogic.org + Google Sheets 
 
 ## CERTIFICATIONS
 
-Hector's only formal certification is **Lean Six Sigma Black Belt** (Six Sigma Academy Amsterdam, June 2024). It already lives in the Academics section of the Master Resume.
+the user's only formal certification is **Lean Six Sigma Black Belt** (Six Sigma Academy Amsterdam, June 2024). It already lives in the Academics section of the Master Resume.
 
 ### When to surface it MORE prominently:
 - Role weighting: process improvement, operations, manufacturing, supply chain, BPM
@@ -71,7 +71,7 @@ Hector's only formal certification is **Lean Six Sigma Black Belt** (Six Sigma A
 - Tech / product / AI-forward roles where the cert is a nice-to-have, not a must
 - The default
 
-If Hector earns additional certifications (PMP, AWS, Azure, OpenAI, etc.), they go in their own line below Academics rather than crowding the existing section.
+If the user earns additional certifications (PMP, AWS, Azure, OpenAI, etc.), they go in their own line below Academics rather than crowding the existing section.
 
 ---
 
@@ -82,7 +82,7 @@ The current format lists three lines: Purdue M.S. (Expected 2027), Lean Six Sigm
 ### When to expand education:
 - Recent graduate roles where coursework / GPA matters
 - Academic / research roles
-- Roles that ask about the AI Management & Policy program specifically (Hector should mention 2–3 relevant courses)
+- Roles that ask about the AI Management & Policy program specifically (the user should mention 2–3 relevant courses)
 - Roles where Texas A&M alumni network is a positive signal (consulting, energy in Texas)
 
 ### What to add when expanding:
@@ -123,7 +123,7 @@ The default list (from master-cv.md): AI Workflow Design | Process Automation | 
 ### Tailoring rules:
 - Keep total list at 10–15 items (more than 15 looks unfocused)
 - Reorder so the JD's must-have keywords appear in the first 3–5 positions
-- Use the JD's exact phrasing where it accurately describes Hector's experience (e.g., if JD says "supply chain orchestration" instead of "supply chain management", use the JD's term)
+- Use the JD's exact phrasing where it accurately describes the user's experience (e.g., if JD says "supply chain orchestration" instead of "supply chain management", use the JD's term)
 - Add JD-specific keywords from master-cv.md's domain skills list when they're absent from the default
 - Never add a keyword that doesn't have evidence in the experience section
 
@@ -137,7 +137,7 @@ The default list (from master-cv.md): AI Workflow Design | Process Automation | 
 
 The risk: tailored resumes contradict a too-specific LinkedIn → recruiters notice → trust erodes.
 
-The solution: LinkedIn captures the *full breadth* of Hector's work, generically enough that any tailored resume can be defended against it.
+The solution: LinkedIn captures the *full breadth* of the user's work, generically enough that any tailored resume can be defended against it.
 
 ### LinkedIn HEADLINE — don't over-specify
 
@@ -147,7 +147,7 @@ The solution: LinkedIn captures the *full breadth* of Hector's work, generically
 | "AI Process Engineer" | Too narrow |
 | **"Business Transformation & Applied AI Leader \| Process Engineering \| Lean Six Sigma Black Belt \| GenAI Implementation"** | Covers all target role types |
 
-The headline should match the resume's positioning tagline at the umbrella level. Use pipe separators and 4–6 broad descriptors that span the role types Hector targets.
+The headline should match the resume's positioning tagline at the umbrella level. Use pipe separators and 4–6 broad descriptors that span the role types the user targets.
 
 ### LinkedIn ABOUT section — cover the breadth
 
@@ -169,7 +169,7 @@ Rules:
 
 ### LinkedIn FEATURED section — show the AI portfolio
 
-This is where Hector can show off everything without crowding tailored resumes:
+This is where the user can show off everything without crowding tailored resumes:
 - LeanLogic.org link
 - GitHub or live demos for any AI projects
 - Articles he's written or been quoted in
@@ -190,7 +190,7 @@ LinkedIn shows the top 3 prominently — get those endorsed by colleagues so the
 
 ### LinkedIn PROJECTS section — list every AI project
 
-Every applied AI project Hector has built goes here, with:
+Every applied AI project the user has built goes here, with:
 - Project name + 1–2 sentence description
 - Tech stack used
 - Outcome (in scope / scale terms, not specific dollar metrics)

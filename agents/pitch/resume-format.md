@@ -1,12 +1,12 @@
 # Resume Format Reference — Match the Master Resume Exactly
 
-> Pitch reads this every time the deliverable is a Word resume. The output must be visually identical to `Master Resume Hector G-Stahl March 2026.docx`. Only the *content* changes per application — the format never does.
+> Pitch reads this every time the deliverable is a Word resume. The output must be visually identical to `Master Resume [Your Name] [Month YYYY].docx`. Only the *content* changes per application — the format never does.
 
 ---
 
 ## SOURCE OF TRUTH
 
-The reference file is `C:\Users\hgonz\Downloads\Resume, Cover Letters, Awards\Master Resume Hector G-Stahl March 2026.docx`. When in doubt, open it and match.
+The reference file is `C:\Users\hgonz\Downloads\Resume, Cover Letters, Awards\Master Resume [Your Name] [Month YYYY].docx`. When in doubt, open it and match.
 
 ---
 
@@ -20,10 +20,10 @@ The reference file is `C:\Users\hgonz\Downloads\Resume, Cover Letters, Awards\Ma
 5. SIGNATURE ACHIEVEMENTS (5 bullets, top-hits, tailored)
 6. CORE COMPETENCIES (single line, pipe-separated, tailored to JD vocabulary)
 7. PROFESSIONAL EXPERIENCE (reverse chronological)
-   For each role:
-   - Company name, City, State + Date range (start – end)
-   - Title
-   - 3–6 achievement bullets, tailored
+ For each role:
+ - Company name, City, State + Date range (start – end)
+ - Title
+ - 3–6 achievement bullets, tailored
 8. SELECTED APPLIED AI PROJECTS (optional — include if relevant to JD; this is a hidden differentiator)
 9. ACADEMICS (degrees + dates + institutions)
 10. TECHNICAL SKILLS (single line, pipe-separated)
@@ -51,7 +51,7 @@ Match the existing master file's exact font choices and sizes — open it and in
 ### Header
 Single line of contact info. Format: `City, State • phone • email • LinkedIn URL`
 
-Example (from master): `Houston, Texas • 832-613-2751 • hgonzalezstahl@gmail.com • www.linkedin.com/in/hector-gonz`
+Example (from master): `[City, State] • [phone] • [email] • [linkedin URL]`
 
 ### Positioning tagline
 Sits below contact line. One short phrase that names the target role family.
@@ -80,7 +80,7 @@ One line, pipe-separated. ~10–15 items. Pull from `master-cv.md` and reorder t
 Reverse chronological. Each role:
 
 ```
-Company, City, State                                Mon YYYY – Mon YYYY
+Company, City, State Mon YYYY – Mon YYYY
 Title (italic)
 - Achievement bullet 1 (verb-led, quantified, business outcome)
 - Achievement bullet 2
@@ -96,13 +96,13 @@ Format conventions from the master:
 The most recent role gets the most bullets (4–6). Older roles can be trimmed to 2–3 bullets if not directly relevant to the JD.
 
 ### Selected applied AI projects (optional)
-Include this section when the JD touches AI, automation, GenAI, transformation, or innovation. This is the differentiator that makes Hector stand out from typical process-engineering candidates.
+Include this section when the JD touches AI, automation, GenAI, transformation, or innovation. This is the differentiator that makes the user stand out from typical process-engineering candidates.
 
 Default content (from master):
 - LeanLogic.org — AI Lean Operations Assistant
 - Google Sheets Accounting Automation — AI-Assisted JavaScript Development
 
-Add or substitute new projects as Hector ships them.
+Add or substitute new projects as the user ships them.
 
 ### Academics
 Three lines (degree + institution + date), no bullet detail unless GPA was 3.5+ or there's an honor worth noting.
@@ -130,12 +130,12 @@ For 1-page tailoring, the priority cuts are:
 
 Per global rule (`~/.claude/CLAUDE.md`), all output files use **spaces, not underscores**.
 
-Pattern: `Resume Gonzalez-Stahl - [Company] - [Role] - [YYYY-MM].docx`
+Pattern: `Resume [LastName] - [Company] - [Role] - [YYYY-MM].docx`
 
 Examples:
-- `Resume Gonzalez-Stahl - Atlassian - Senior PM - 2026-04.docx`
-- `Resume Gonzalez-Stahl - Microsoft - Program Manager Supply Chain - 2026-04.docx`
-- `Cover Letter Gonzalez-Stahl - Atlassian - Senior PM - 2026-04.docx`
+- `Resume [LastName] - Atlassian - Senior PM - 2026-04.docx`
+- `Resume [LastName] - Microsoft - Program Manager Supply Chain - 2026-04.docx`
+- `Cover Letter [LastName] - Atlassian - Senior PM - 2026-04.docx`
 
 ---
 
@@ -154,10 +154,10 @@ The reference template is the Master Resume. The cleanest path is to **load the 
 
 ## COVER LETTER FORMAT
 
-When a cover letter is drafted, follow Hector's existing format (per `JP Morgan Cover Letter.docx` reference):
+When a cover letter is drafted, follow the user's existing format (per `JP Morgan Cover Letter.docx` reference):
 
 ```
-HECTOR EDUARDO GONZALEZ-STAHL
+[YOUR FULL NAME]
 City, ZIP | phone | email | LinkedIn
 
 Dear Hiring Manager,
@@ -177,10 +177,10 @@ Dear Hiring Manager,
 [Closing: 2 sentences. Direct close, gratitude, ask for the conversation.]
 
 Sincerely,
-Hector Gonzalez-Stahl
+[Your Name]
 ```
 
-**Note for Pitch:** This format is what Hector currently uses. The Pitch playbook has slightly different opener guidance ("don't start with 'I am writing to express my interest'"). When tailoring, default to Hector's existing format unless a specific employer / industry calls for a different style. Mention the trade-off in the fit summary if you want to suggest a stronger opener.
+**Note for Pitch:** This format is what the user currently uses. The Pitch playbook has slightly different opener guidance ("don't start with 'I am writing to express my interest'"). When tailoring, default to the user's existing format unless a specific employer / industry calls for a different style. Mention the trade-off in the fit summary if you want to suggest a stronger opener.
 
 Length: keep to one page. ~300–400 words.
 

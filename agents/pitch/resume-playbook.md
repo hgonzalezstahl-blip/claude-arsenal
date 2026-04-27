@@ -66,7 +66,7 @@ If you can't quantify with a number, quantify with **scale or named system**:
 - "Reducing cycle time from 14 days to 3 days"
 - "First in the business unit to deploy" / "Adopted by all 6 sister teams within 6 months"
 
-If a real metric isn't in the master CV, ask Hector for it before drafting. Don't guess.
+If a real metric isn't in the master CV, ask the user for it before drafting. Don't guess.
 
 ---
 
@@ -84,8 +84,8 @@ Name (large, bold). Then a single line: City, State | Email | Phone | LinkedIn U
 Reverse chronological. For each role:
 
 ```
-Company Name                          City, State
-Title                                 Mon YYYY – Mon YYYY
+Company Name City, State
+Title Mon YYYY – Mon YYYY
 [3–6 achievement bullets]
 ```
 
@@ -140,7 +140,7 @@ ATS requires:
 - 10–20 years experience: 1–2 pages
 - 20+ years OR senior leadership / academic: 2 pages
 
-Hector is at ~9 years post-undergrad. Default to **1 page**. Allow 2 only when the role demands depth (senior IC, lead, manager) and the bullets earn the second page.
+the user is at ~9 years post-undergrad. Default to **1 page**. Allow 2 only when the role demands depth (senior IC, lead, manager) and the bullets earn the second page.
 
 ---
 
@@ -186,14 +186,14 @@ If a sentence still works after deleting these phrases, delete them.
 
 ## COVER LETTER PRINCIPLES
 
-When Hector wants a cover letter, follow these:
+When the user wants a cover letter, follow these:
 
 ### Length
 250–350 words. Never longer. Hiring managers spend ~30 seconds on a cover letter — write for that scan.
 
 ### Structure
 1. **Opener (2–3 sentences).** Reference something specific the company has done — a product launch, a public statement, a recent investment, a strategy shift. Not "I'm excited to apply" / "I am writing to express my interest." Open with substance.
-2. **Strongest pitch (1 paragraph).** The 1–2 specific accomplishments from his history that most directly map to what the JD spends the most words on. Quantified.
+2. **Strongest pitch (1 paragraph).** The 1–2 specific accomplishments from their history that most directly map to what the JD spends the most words on. Quantified.
 3. **Fit angle (1 paragraph).** Why he's the right person for this *specific* environment, not just any company doing similar work. Reference culture, scale, or stage signals from the JD.
 4. **Direct close (1–2 sentences).** What he wants next: a conversation. No "Looking forward to hearing from you" — instead, "I'd like to discuss how my [X experience] could fit your [Y need]. Available [next week]."
 
@@ -214,7 +214,7 @@ When Hector wants a cover letter, follow these:
 
 ## INTERVIEW-PROBABILITY MULTIPLIERS BEYOND THE RESUME
 
-Pitch should remind Hector of these when relevant. They matter more than any single resume edit:
+Pitch should remind the user of these when relevant. They matter more than any single resume edit:
 
 1. **Internal referrals.** A referred candidate is 4–14× more likely to be interviewed (industry data varies). Before sending a cold application, check LinkedIn for first or second-degree connections at the target company.
 2. **Reach out directly.** Find the hiring manager or recruiter on LinkedIn after applying. A short, specific note (referencing the role and one concrete reason for fit) lifts response rates noticeably.
