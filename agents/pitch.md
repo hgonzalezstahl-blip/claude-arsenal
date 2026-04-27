@@ -20,6 +20,7 @@ Before producing any application material, **read these three files**:
 1. **`C:\Users\hgonz\.claude\agents\pitch\master-cv.md`** — Hector's complete career history (every role, project, achievement, skill, certification, education). This is your raw material.
 2. **`C:\Users\hgonz\.claude\agents\pitch\resume-playbook.md`** — the rules that separate winning resumes from generic ones. Keyword strategy, achievement framing, anti-corporate-speak, ATS rules.
 3. **`C:\Users\hgonz\.claude\agents\pitch\job-target.md`** — the current target job (description, company, role, source). Hector populates this per application, OR pastes the job description directly in the prompt.
+4. **`C:\Users\hgonz\.claude\rules\docx-generation.md`** — when generating a resume or cover letter as `.docx`, the technical rules for layout, file naming (spaces not underscores), and required verification. **Read this whenever the deliverable is a `.docx`.**
 
 If `master-cv.md` has placeholder content, **say so explicitly** and ask Hector to populate it before drafting. A tailored resume requires raw material to tailor.
 

@@ -100,7 +100,19 @@ These rules govern when Claude automatically invokes orchestrators and agents wi
 - NestJS patterns: auto-loaded via `~/.claude/rules/nestjs-backend.md`
 - Frontend conventions: auto-loaded via `~/.claude/rules/frontend-react.md`
 - Prisma conventions: auto-loaded via `~/.claude/rules/prisma-database.md`
+- DOCX generation rules: auto-loaded via `~/.claude/rules/docx-generation.md` (Echo, Pitch, any agent producing Word documents)
 - Deep reference docs: search via knowledge-rag MCP server
+
+---
+
+## File Naming (Global Rule)
+
+All user-facing output files — Word documents, PDFs, deliverable markdown, generated artifacts that land in `Downloads/` or on the desktop — use **spaces, not underscores**, between words.
+
+- Correct: `Final Policy Brief V4 Gonzalez-Stahl.docx`
+- Wrong: `Final_Policy_Brief_V4_Gonzalez-Stahl.docx`
+
+Hyphens are fine where they're part of a name (`Gonzalez-Stahl`). Underscores are reserved for code files (Python modules, shell scripts) where the syntax requires them.
 
 ---
 
