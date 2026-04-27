@@ -51,3 +51,6 @@ session-env/
 
 # External tools (installed separately)
 tools/
+
+# Echo personal voice profile (samples stay local, never pushed)
+agents/echo/style-profile.md

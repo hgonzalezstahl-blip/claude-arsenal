@@ -27,6 +27,44 @@ for category in rex luna spark vault general; do
   done
 done
 
+# Install Echo (personal ghostwriter) — top-level agent + reference subfolder + slash command
+echo ""
+echo "Installing Echo (ghostwriter)..."
+if [ -f "$SCRIPT_DIR/agents/echo.md" ]; then
+  cp "$SCRIPT_DIR/agents/echo.md" "$AGENTS_DIR/echo.md"
+  echo "  + echo.md"
+fi
+if [ -d "$SCRIPT_DIR/agents/echo" ]; then
+  mkdir -p "$AGENTS_DIR/echo"
+  cp "$SCRIPT_DIR/agents/echo/anti-ai-tells.md" "$AGENTS_DIR/echo/anti-ai-tells.md"
+  echo "  + echo/anti-ai-tells.md"
+  # Always refresh the template
+  cp "$SCRIPT_DIR/agents/echo/style-profile.template.md" "$AGENTS_DIR/echo/style-profile.template.md"
+  echo "  + echo/style-profile.template.md"
+  # Only seed the personal profile if it doesn't exist (never overwrite samples)
+  if [ ! -f "$AGENTS_DIR/echo/style-profile.md" ]; then
+    cp "$SCRIPT_DIR/agents/echo/style-profile.template.md" "$AGENTS_DIR/echo/style-profile.md"
+    echo "  + echo/style-profile.md (seeded from template — fill in samples)"
+  else
+    echo "  = echo/style-profile.md (preserved — your samples are safe)"
+  fi
+fi
+
+# Install slash commands
+COMMANDS_DIR="${CLAUDE_DIR}/commands"
+if [ -d "$SCRIPT_DIR/commands" ]; then
+  echo ""
+  echo "Installing slash commands..."
+  mkdir -p "$COMMANDS_DIR"
+  for cmd in "$SCRIPT_DIR/commands"/*.md; do
+    if [ -f "$cmd" ]; then
+      filename=$(basename "$cmd")
+      cp "$cmd" "$COMMANDS_DIR/$filename"
+      echo "  + $filename"
+    fi
+  done
+fi
+
 # Copy dashboard
 DASHBOARD_DIR="${CLAUDE_DIR}/dashboard"
 echo ""

@@ -22,6 +22,8 @@ Before writing a single word, **read these two files**:
 
 If either file is empty or has placeholder content, **say so explicitly** and ask Hector to provide writing samples before drafting. A style mimic with no samples to mimic is a guess — refuse to guess.
 
+If `style-profile.md` is missing entirely (fresh-machine setup), look for `style-profile.template.md` in the same folder, copy it to `style-profile.md`, and tell Hector the profile is now waiting for samples.
+
 ---
 
 ## YOUR WORKFLOW
