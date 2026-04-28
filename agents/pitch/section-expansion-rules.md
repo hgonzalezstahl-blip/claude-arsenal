@@ -32,17 +32,38 @@ Specifically: U.S. citizen. Surface only when the JD requires it.
 
 ## SELECTED APPLIED AI PROJECTS — when to include / expand
 
-This section is the user's biggest differentiator. Most process-engineering candidates don't ship their own AI tools. He does. But it's not always the right move to feature them prominently.
+The user's biggest differentiator. Most process-engineering candidates don't ship their own AI tools. He does. But there's a structural rule that matters for honesty:
+
+### CRITICAL: separate JPMC-built AI work from independent AI projects
+
+- **JPMC-built AI tools** (Copilot Agent Arsenal, PAL ERP Dashboard, multi-agent orchestration framework, etc.) → these go as **JPMorgan Chase role bullets**, NOT as personal projects. They were built in the JPMC environment as part of the user's AI Forward leadership and they're work-context capability demonstrations, not personal-time projects.
+- **Independent AI projects** (Rekaliber, Claude Arsenal repo, Lean AI App, LeanLogic.org, Multi-Agent Shogun fork) → these go in the **Selected Applied AI Projects** section. Built on the user's own time/initiative.
+
+Mixing these layers risks misrepresentation. A reviewer reading "Built a 19-route lean operations dashboard" listed under "Personal Projects" might think the user built it in their spare time; listed under "JPMC role bullets" makes it clear it's work-context capability work.
+
+### Default trio for the Selected Applied AI Projects section
+
+When the section is included, the default lineup is:
+1. **Rekaliber PMS** (private, in active development) — enterprise SaaS competing with Guesty/Hostaway/Lodgify
+2. **Claude Arsenal** (public on GitHub) — multi-agent system, 39+ agents, 5 teams, production-grade
+3. **Lean AI App** (private, live on Vercel + Capacitor native) — Duolingo-style micro-learning, May 2026 launch
+
+These are the strongest independent flagships. Pitch picks 2 or 3 per JD relevance.
 
 ### Include and expand the AI projects section when:
 - JD mentions GenAI, LLMs, AI implementation, AI/ML, machine learning, automation, digital transformation, intelligent automation, AI-enabled workflows
 - Target company is tech-forward (FAANG, AI-native startups, modern SaaS, fintech with AI investment)
-- Role is at the intersection of operations and AI (AI Operations, AI Program Manager, Applied AI, AI Implementation Lead)
+- Role is at the intersection of operations and AI (AI Operations, AI Program Manager, Applied AI, AI Implementation Lead, Solution Architect with AI overlay)
 - Role is at a senior IC or principal level where shipped portfolio matters
 - The JD asks for "examples of AI projects you have built"
-- the user is competing against non-builder candidates and needs to differentiate
+- The user is competing against non-builder candidates and needs to differentiate
+- For SCM / o9 / Kinaxis / SAP IBP / Blue Yonder roles → also surface PAL ERP Dashboard *as a JPMC role bullet* (not as a personal project) since it's the o9-equivalent prototype
 
-In these cases, expand to 3–5 AI projects, with one or two sentences of substance per project (problem solved + tech stack + outcome).
+In these cases, surface 3 projects from Tier 1 with one or two sentences of substance per project (problem solved + tech stack + outcome).
+
+### Surface Tier 2 projects only when role-specific:
+- **LeanLogic.org** — only for content / branding / consulting / lean-methodology / personal-brand roles
+- **Multi-Agent Shogun (fork)** — only for AI-engineering / dev-tooling / open-source-contribution roles
 
 ### Trim or omit the AI projects section when:
 - JD is focused on traditional process engineering / Lean / Six Sigma without AI overlay
@@ -51,10 +72,22 @@ In these cases, expand to 3–5 AI projects, with one or two sentences of substa
 - Role is sales / business development / customer-facing where AI projects are noise
 - JD explicitly downweights side projects ("focus on enterprise experience")
 
-In these cases, drop the section entirely or compress to a single line in Technical Skills ("Built and ship AI tooling — see linkedin.com/in/[your-handle]/projects").
+In these cases, drop the section entirely or compress to a single line in Technical Skills ("Built and ship AI tooling — see linkedin.com/in/[your-handle]/projects"). The JPMC-role AI bullets still surface the AI capability — they don't depend on this section.
 
-### When in between, default to "include 2 projects":
-The current Master Resume baseline is 2 projects (LeanLogic.org + Google Sheets Accounting Automation). That's a safe default for most mid-to-senior tech-adjacent applications.
+### Tier 3 — dropped from resume entirely:
+- Google Sheets Accounting Automation — kept in the Independent Project Portfolio doc but no longer surfaced on the resume. Pales relative to Tier 1 work.
+
+### Portfolio docs as separate attachments:
+Two reference portfolios exist on disk:
+- `~/Downloads/AI Project Portfolio - Master Repository - Gonzalez-Stahl.docx` — JPMC environment AI capability portfolio (Copilot Agent Arsenal, PAL ERP Dashboard, etc.)
+- `~/Downloads/Independent Project Portfolio - Gonzalez-Stahl.docx` — Independent projects (Rekaliber, Claude Arsenal, Lean AI App, etc.)
+
+These are sent as separate attachments **only when**:
+- The recruiter explicitly requests a portfolio
+- The application portal allows multiple attachments and rewards depth
+- Direct hiring-manager engagement (LinkedIn outreach, email)
+
+Don't auto-attach to every cold application — multi-document submissions get less reviewer attention than focused ones.
 
 ---
 
