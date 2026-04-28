@@ -1,20 +1,50 @@
+<h1 align="center">Claude Arsenal</h1>
+
 <p align="center">
-  <img src="https://img.shields.io/badge/Agents-40-blueviolet?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Skills-6-9cf?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Plugins-23-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Copilot_Skills-8-green?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/MCP_Servers-8-orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Hooks-15-red?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Rules-6-yellow?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Knowledge_RAG-Active-brightgreen?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Dashboard-Live-brightgreen?style=for-the-badge" />
+  <em>A production-grade multi-agent system for Claude Code.<br/>
+  Engineering standards enforced automatically, every session.</em>
 </p>
 
-# Claude Arsenal
+<p align="center">
+  <strong>Agents</strong>&nbsp;
+  <img src="https://img.shields.io/badge/Rex-17-blueviolet?style=flat-square" alt="Rex" />
+  <img src="https://img.shields.io/badge/Luna-6-pink?style=flat-square" alt="Luna" />
+  <img src="https://img.shields.io/badge/Spark-7-orange?style=flat-square" alt="Spark" />
+  <img src="https://img.shields.io/badge/Vault-4-darkgreen?style=flat-square" alt="Vault" />
+  <img src="https://img.shields.io/badge/Auditor-1-red?style=flat-square" alt="Auditor" />
+  <img src="https://img.shields.io/badge/General-5-lightgrey?style=flat-square" alt="General" />
+</p>
 
-> A production-grade multi-agent system for Claude Code — **40 specialized agents** across 5 teams, **6 user-built skills** that enforce systems-thinking discipline, 23 plugins, 15 lifecycle hooks, 8 MCP servers, a live session dashboard, semantic RAG knowledge vault, full audit trail, Shogun parallel execution (10 agents via tmux), and a GitHub Copilot framework port. Engineering standards enforced automatically, every session.
+<p align="center">
+  <strong>Discipline</strong>&nbsp;
+  <img src="https://img.shields.io/badge/Skills-6-9cf?style=flat-square" alt="Skills" />
+  <img src="https://img.shields.io/badge/Rules-6-yellow?style=flat-square" alt="Rules" />
+  <img src="https://img.shields.io/badge/Hooks-15-red?style=flat-square" alt="Hooks" />
+  <img src="https://img.shields.io/badge/Quality_Gates-8-blue?style=flat-square" alt="Quality Gates" />
+</p>
 
-Built by [Hector Gonzalez-Stahl](https://github.com/hgonzalezstahl-blip)
+<p align="center">
+  <strong>Ecosystem</strong>&nbsp;
+  <img src="https://img.shields.io/badge/Plugins-23-blue?style=flat-square" alt="Plugins" />
+  <img src="https://img.shields.io/badge/MCP_Servers-8-orange?style=flat-square" alt="MCP" />
+  <img src="https://img.shields.io/badge/Copilot_Skills-8-green?style=flat-square" alt="Copilot" />
+  <img src="https://img.shields.io/badge/Shogun-WSL%2Ftmux-purple?style=flat-square" alt="Shogun" />
+</p>
+
+<p align="center">
+  <strong>Status</strong>&nbsp;
+  <img src="https://img.shields.io/badge/Knowledge_RAG-Active-brightgreen?style=flat-square" alt="RAG" />
+  <img src="https://img.shields.io/badge/Dashboard-Live-brightgreen?style=flat-square" alt="Dashboard" />
+  <img src="https://img.shields.io/badge/Memory-Persistent-brightgreen?style=flat-square" alt="Memory" />
+  <img src="https://img.shields.io/badge/Audit_Trail-On-brightgreen?style=flat-square" alt="Audit" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT" />
+</p>
+
+<p align="center">
+  <strong>40 agents</strong> &middot; <strong>6 skills</strong> &middot; <strong>23 plugins</strong> &middot; <strong>15 hooks</strong> &middot; <strong>8 MCP servers</strong> &middot; <strong>live dashboard</strong> &middot; <strong>full audit trail</strong>
+</p>
+
+<p align="center">Built by <a href="https://github.com/hgonzalezstahl-blip">Hector Gonzalez-Stahl</a></p>
 
 ---
 
@@ -33,6 +63,73 @@ This arsenal is built around the opposite premise: **systems thinking is the ski
 | **Multiple lenses, one decision** | `roundtable` convenes Vault + Spark + Luna + Scout (or any cast) to debate cross-domain decisions instead of picking the one orchestrator's view. |
 | **Memory that compounds** | `retrospective` writes durable lessons (feedback / project / reference) so the same mistake doesn't repeat across sessions. |
 | **Audit by default** | Every agent spawn, every tool call, every Stop event is logged. Cost and context tracked per session, model-tier-aware. |
+
+---
+
+## Quick Reference — What to Say
+
+You don't need to learn agent names. Say what you want; the orchestrator routes. A few examples:
+
+<table>
+<tr>
+<th align="left">When you say...</th>
+<th align="left">What fires</th>
+</tr>
+<tr>
+<td><code>start</code> / <code>continue</code> / <code>next module</code> in Rekaliber</td>
+<td><strong>Rex</strong> orchestrator → ITERATION SEQUENCE on STATE.md</td>
+</tr>
+<tr>
+<td>Paste a stack trace from NestJS / Prisma / Next.js</td>
+<td><strong>Rex Debugger</strong> → root-cause + fix</td>
+</tr>
+<tr>
+<td><code>is this good UX?</code> / <code>would users get this?</code></td>
+<td><strong>Luna</strong> → spawns 2-4 dynamic personas + analyst synthesis</td>
+</tr>
+<tr>
+<td><code>should we charge for this?</code> / <code>price the X</code></td>
+<td><strong>Vault</strong> → modeler + analyst + auditor on the pricing</td>
+</tr>
+<tr>
+<td><code>write a launch post</code> / <code>cold outreach for X</code></td>
+<td><strong>Spark</strong> → strategist or writer → curator quality gate</td>
+</tr>
+<tr>
+<td><code>I built this in Lovable, is it safe?</code></td>
+<td><strong>Auditor</strong> → 7-layer structural audit with plain-English impact</td>
+</tr>
+<tr>
+<td><code>stress test this</code> / <code>pre-mortem on this plan</code></td>
+<td><strong>elicit</strong> skill → picks one of 9 reasoning methods</td>
+</tr>
+<tr>
+<td><code>walk me through what I just shipped</code></td>
+<td><strong>checkpoint</strong> skill → concern-ordered walkthrough + hotspots</td>
+</tr>
+<tr>
+<td><code>what does everyone think?</code> / <code>convene the team</code></td>
+<td><strong>roundtable</strong> skill → 3-5 orchestrators debate in one session</td>
+</tr>
+<tr>
+<td><code>tear this apart</code> / <code>find the holes</code></td>
+<td><strong>adversarial-review</strong> skill → must-find-issues review</td>
+</tr>
+<tr>
+<td><code>save the learning</code> / after external feedback comes in</td>
+<td><strong>retrospective</strong> skill → writes durable memory entries</td>
+</tr>
+<tr>
+<td><code>tailor my resume for this job</code> + paste JD</td>
+<td><strong>Pitch</strong> → master CV → tailored resume + cover letter</td>
+</tr>
+<tr>
+<td><code>write me a [essay / email / post]</code></td>
+<td><strong>Echo</strong> → ghostwrites in your voice with AI-tell scrub</td>
+</tr>
+</table>
+
+Working-directory match wins over phrasing: anything inside `~/rekaliber` routes to Rex regardless of trigger words.
 
 ---
 
@@ -191,38 +288,49 @@ claude-arsenal/
 
 ## System Architecture
 
-```
-                                 User Request
-                                      │
-                                      ▼
-                       ┌─────────────────────────┐
-                       │   CLAUDE.md Orchestrator │
-                       │   (auto-detects intent)  │
-                       └─────────────────────────┘
-                                      │
-                 ┌────────────────────┴────────────────────┐
-                 ▼                                         ▼
-        Single Session (default)              Shogun (WSL2/tmux)
-        Claude suggests, user approves        USER MUST APPROVE FIRST
-                 │                                         │
-   ┌─────┬──────┼──────┬──────┬──────┐          ┌─────────┴─────────┐
-   ▼     ▼      ▼      ▼      ▼      ▼          ▼                   ▼
- ┌─────┐┌────┐┌─────┐┌─────┐┌────┐┌──────┐   Standard        Arsenal Mode
- │ Rex ││Luna││Spark││Vault││Task││Red   │   (generalist)    (--arsenal)
- │ 17  ││ 6  ││  7  ││  4  ││Mstr││Team +│      │                  │
- │     ││    ││     ││     ││    ││Scout │   ┌───┴───┐    ┌────────┴────────┐
- └─────┘└────┘└─────┘└─────┘└────┘└──────┘   │Karo   │    │Karo assigns work│
-                                              │assigns│    │Each Ashigaru has│
-          Specialized agents,                 │generic│    │full arsenal:     │
-          deep quality gates,                 │tasks  │    │Rex, Luna, Spark,│
-          one thing at a time                 └───┬───┘    │Vault as subagents│
-                                                  │        └────────┬────────┘
-                 │                          ┌─────┴─────┐    ┌─────┴─────┐
-                 ▼                          │7 Ashigaru │    │7 Ashigaru │
-   ┌─────────────────────────┐              │(generalist)│    │(arsenal)  │
-   │   Live Session Dashboard │              │+ 1 Gunshi │    │+ 1 Gunshi │
-   │   http://localhost:3333  │              └───────────┘    └───────────┘
-   └─────────────────────────┘
+```mermaid
+flowchart TD
+    User([User Request])
+    Claude[CLAUDE.md Orchestrator<br/>auto-detects intent]
+    Single[Single Session<br/><i>default — Claude suggests, user approves</i>]
+    Shogun[Shogun WSL2/tmux<br/><i>USER MUST APPROVE FIRST</i>]
+    Dashboard[Live Dashboard<br/>localhost:3333]
+
+    User --> Claude
+    Claude --> Single
+    Claude -. asks first .-> Shogun
+    Single --> Dashboard
+
+    Single --> Rex[Rex<br/>17 agents]
+    Single --> Luna[Luna<br/>6 agents]
+    Single --> Spark[Spark<br/>7 agents]
+    Single --> Vault[Vault<br/>4 agents]
+    Single --> Aud[Auditor]
+    Single --> TM[TaskMaster]
+    Single --> Skills[6 Skills<br/>three-questions, checkpoint,<br/>elicit, adversarial-review,<br/>roundtable, retrospective]
+
+    Shogun --> Standard[Standard<br/>generalist Ashigaru]
+    Shogun --> ArsenalMode[Arsenal Mode<br/>full arsenal per Ashigaru]
+
+    classDef orchestrator fill:#4a4a8a,stroke:#fff,color:#fff
+    classDef rexTeam fill:#7a4a8a,stroke:#fff,color:#fff
+    classDef ux fill:#a8567a,stroke:#fff,color:#fff
+    classDef marketing fill:#c47a3a,stroke:#fff,color:#fff
+    classDef finance fill:#3a8a4a,stroke:#fff,color:#fff
+    classDef audit fill:#a83a3a,stroke:#fff,color:#fff
+    classDef discipline fill:#3a7aa8,stroke:#fff,color:#fff
+    classDef shogun fill:#6a3a8a,stroke:#fff,color:#fff
+    classDef monitor fill:#3a8a8a,stroke:#fff,color:#fff
+
+    class Claude orchestrator
+    class Rex rexTeam
+    class Luna ux
+    class Spark marketing
+    class Vault finance
+    class Aud audit
+    class Skills discipline
+    class Shogun,Standard,ArsenalMode shogun
+    class Dashboard monitor
 ```
 
 **When to use each path:**
@@ -257,28 +365,31 @@ The dashboard auto-starts via a SessionStart hook and discovers all active sessi
 
 ### How It Works
 
-```
-SessionStart hook
-      │
-      ▼
-┌──────────────┐     ┌──────────────┐
-│ server.js    │────▶│ Scans all    │
-│ (Node.js)    │     │ project dirs │
-│ Port 3333    │     │ for .jsonl   │
-└──────────────┘     └──────────────┘
-      │                     │
-      ▼                     ▼
-┌──────────────┐     ┌──────────────┐
-│ Poll each    │     │ Re-scan for  │
-│ session 1s   │     │ new sessions │
-│ (incremental)│     │ every 10s    │
-└──────────────┘     └──────────────┘
-      │
-      ▼
-┌──────────────┐
-│ SSE stream   │──▶ Browser (index.html)
-│ to clients   │    Session switcher + live stats
-└──────────────┘
+```mermaid
+flowchart TD
+    Start([SessionStart hook])
+    Server[server.js<br/>Node.js, port 3333]
+    Scan[Scan all project dirs<br/>for .jsonl transcripts]
+    Poll[Poll each session<br/>every 1s incremental]
+    Rescan[Re-scan for new sessions<br/>every 10s]
+    SSE[SSE stream to clients]
+    Browser([Browser<br/>session switcher + live stats])
+
+    Start --> Server
+    Server --> Scan
+    Server --> Rescan
+    Scan --> Poll
+    Poll --> SSE
+    Rescan --> SSE
+    SSE --> Browser
+
+    classDef hook fill:#3a8a8a,stroke:#fff,color:#fff
+    classDef proc fill:#3a5a8a,stroke:#fff,color:#fff
+    classDef user fill:#7a3a8a,stroke:#fff,color:#fff
+
+    class Start hook
+    class Server,Scan,Poll,Rescan,SSE proc
+    class Browser user
 ```
 
 ```bash
@@ -316,18 +427,32 @@ node ~/.claude/dashboard/server.js --port 3333
 
 ### Quality Gate Pipeline (8 Gates)
 
-```
- ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
- │ 1. Code  │→ │2. Securi-│→ │3. Red    │→ │4. Test   │→ │5. Perf   │→ │6. Observ-│→ │ 7. Docs  │→ │ 8. QA    │
- │  Review  │  │ty Audit  │  │  Team    │  │  Suite   │  │  Audit   │  │ability   │  │          │  │          │
- │ (sonnet) │  │ (opus)   │  │ (opus)   │  │ (sonnet) │  │ (opus)   │  │ (sonnet) │  │ (haiku)  │  │ (sonnet) │
- └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘
-                                                                                                        │
-                                                                                                        ▼
-                                                                                              PASS  or  FAIL
+```mermaid
+flowchart LR
+    G1[1. Code Review<br/>sonnet] --> G2[2. Security<br/>opus]
+    G2 --> G3[3. Red Team<br/>opus]
+    G3 --> G4[4. Test Suite<br/>sonnet]
+    G4 --> G5[5. Performance<br/>opus]
+    G5 --> G6[6. Observability<br/>sonnet]
+    G6 --> G7[7. Docs<br/>haiku]
+    G7 --> G8[8. QA + Three Questions<br/>sonnet]
+    G8 --> V{PASS or FAIL}
+    V -->|PASS| Ship([Ships])
+    V -->|FAIL| Block([Blocked — fix and re-run])
+
+    classDef gate fill:#3a5a8a,stroke:#fff,color:#fff
+    classDef opus fill:#7a3a8a,stroke:#fff,color:#fff
+    classDef pass fill:#3a8a4a,stroke:#fff,color:#fff
+    classDef fail fill:#a83a3a,stroke:#fff,color:#fff
+
+    class G1,G4,G6,G8 gate
+    class G2,G3,G5 opus
+    class G7 gate
+    class Ship pass
+    class Block fail
 ```
 
-> Any **Critical** or **High** finding = pipeline fails. Nothing ships until resolved.
+> Any **Critical** or **High** finding = pipeline fails. Nothing ships until resolved. Step 8 includes the **Three Questions** systems-thinking gate (state / feedback / blast radius) — code that compiles but cannot answer them in plain English FAILs QA.
 
 ### Rex-RedTeam: Prompt Adversarial Testing
 
@@ -353,25 +478,32 @@ node ~/.claude/dashboard/server.js --port 3333
 
 ### How It Works
 
-```
-          Luna Orchestrator
-          Analyzes product & users
-                    │
-         ┌──────────┼──────────┐
-         ▼          ▼          ▼
-   ┌──────────┐┌──────────┐┌──────────┐
-   │ Persona  ││ Persona  ││ Persona  │
-   │ (auto-   ││ (auto-   ││ (auto-   │
-   │generated)││generated)││generated)│
-   └──────────┘└──────────┘└──────────┘
-         │          │          │
-         └──────────┼──────────┘
-                    ▼
-           Luna Analyst
-           Synthesizes findings
-                    │
-                    ▼
-          SHIP / GAPS / NEEDS WORK
+```mermaid
+flowchart TD
+    Luna[Luna Orchestrator<br/>analyzes product & users]
+    P1[Persona 1<br/>auto-generated]
+    P2[Persona 2<br/>auto-generated]
+    P3[Persona 3<br/>auto-generated]
+    P4[Persona 4<br/><i>optional</i>]
+    Analyst[Luna Analyst<br/>synthesizes findings]
+    V{Verdict}
+    Ship([SHIP])
+    Gaps([GAPS — address before launch])
+    Needs([NEEDS WORK — major rework])
+
+    Luna --> P1 & P2 & P3 & P4
+    P1 & P2 & P3 & P4 --> Analyst
+    Analyst --> V
+    V --> Ship
+    V --> Gaps
+    V --> Needs
+
+    classDef orch fill:#a8567a,stroke:#fff,color:#fff
+    classDef persona fill:#c47a9a,stroke:#fff,color:#fff
+    classDef verdict fill:#7a4a8a,stroke:#fff,color:#fff
+    class Luna,Analyst orch
+    class P1,P2,P3,P4 persona
+    class Ship,Gaps,Needs verdict
 ```
 
 ### Persona Diversity Axes
@@ -415,29 +547,36 @@ node ~/.claude/dashboard/server.js --port 3333
 
 ### How It Works
 
-```
-          Spark Orchestrator
-          Sets the brief, coordinates the team
-                    │
-     ┌──────────────┼──────────────┐──────────────┐
-     ▼              ▼              ▼              ▼
-┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│ Strategist│  │  Writer  │  │ Designer │  │  Closer  │
-│ (opus)   │  │ (sonnet) │  │ (sonnet) │  │ (sonnet) │
-└──────────┘  └──────────┘  └──────────┘  └──────────┘
-     │              │              │              │
-     ▼              └──────┬───────┘              │
-┌──────────┐               │                     │
-│ Analyst  │───────────────┘─────────────────────┘
-│ (sonnet) │
-└──────────┘
-                    │
-                    ▼
-           Spark Curator
-           Quality gate — scores & approves
-                    │
-                    ▼
-          APPROVED  or  REVISION REQUIRED
+```mermaid
+flowchart TD
+    Spark[Spark Orchestrator<br/>sets the brief]
+    Strat[Strategist<br/>opus]
+    Writer[Writer<br/>sonnet]
+    Designer[Designer<br/>sonnet]
+    Closer[Closer<br/>sonnet]
+    Analyst[Analyst<br/>sonnet — performance & metrics]
+    Curator[Spark Curator<br/>quality gate, scores 1-10]
+    V{Verdict}
+    Approved([APPROVED — ships])
+    Revise([REVISION REQUIRED<br/>specific notes])
+
+    Spark --> Strat & Writer & Designer & Closer
+    Strat & Writer & Designer & Closer --> Analyst
+    Analyst --> Curator
+    Curator --> V
+    V --> Approved
+    V --> Revise
+
+    classDef orch fill:#c47a3a,stroke:#fff,color:#fff
+    classDef worker fill:#dba066,stroke:#fff,color:#fff
+    classDef gate fill:#a85a3a,stroke:#fff,color:#fff
+    classDef pass fill:#3a8a4a,stroke:#fff,color:#fff
+    classDef fail fill:#a83a3a,stroke:#fff,color:#fff
+
+    class Spark,Curator orch
+    class Strat,Writer,Designer,Closer,Analyst worker
+    class Approved pass
+    class Revise fail
 ```
 
 ### Agent Roster
@@ -473,26 +612,33 @@ Every deliverable is scored 1-10 on four dimensions:
 
 ### How It Works
 
-```
-          Vault Orchestrator
-          Routes financial requests
-                    │
-         ┌──────────┼──────────┐
-         ▼          ▼          ▼
-   ┌──────────┐┌──────────┐┌──────────┐
-   │ Modeler  ││ Analyst  ││ (both    │
-   │ Builds   ││ Market   ││ can run  │
-   │ models   ││ research ││ together)│
-   └──────────┘└──────────┘└──────────┘
-         │          │
-         └──────────┘
-                │
-                ▼
-         Vault Auditor
-         Validates assumptions, stress-tests
-                │
-                ▼
-         APPROVED  or  REVISE
+```mermaid
+flowchart TD
+    Vault[Vault Orchestrator<br/>routes financial requests]
+    Mod[Vault Modeler<br/>P&L, cash flow, unit economics]
+    Ana[Vault Analyst<br/>market research, comps]
+    Aud[Vault Auditor<br/>validates assumptions, stress-tests]
+    V{Verdict}
+    Approved([APPROVED — ships])
+    Revise([REVISE — specific gaps])
+
+    Vault --> Mod
+    Vault --> Ana
+    Mod & Ana --> Aud
+    Aud --> V
+    V --> Approved
+    V --> Revise
+
+    classDef orch fill:#3a8a4a,stroke:#fff,color:#fff
+    classDef worker fill:#5aaa6a,stroke:#fff,color:#fff
+    classDef gate fill:#3a6a3a,stroke:#fff,color:#fff
+    classDef pass fill:#3a8a4a,stroke:#fff,color:#fff
+    classDef fail fill:#a83a3a,stroke:#fff,color:#fff
+
+    class Vault,Aud orch
+    class Mod,Ana worker
+    class Approved pass
+    class Revise fail
 ```
 
 ### Agent Roster
@@ -754,21 +900,32 @@ knowledge/
 
 ### Formation
 
-```
-         You
-          │
-    ┌─────┴─────┐
-    │  Shogun   │  (Opus) — receives your commands
-    └─────┬─────┘
-          │
-    ┌─────┴─────┐
-    │   Karo    │  (Sonnet) — decomposes into subtasks
-    └─────┬─────┘
-          │
-    ┌─────┼─────┬─────┬─────┬─────┬─────┬─────┐
-    ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
-   A1    A2    A3    A4    A5    A6    A7   Gunshi
-  (Sonnet — 7 parallel workers)           (Opus — QA)
+```mermaid
+flowchart TD
+    You([You])
+    Shogun[Shogun<br/>opus — receives commands]
+    Karo[Karo<br/>sonnet — decomposes into subtasks]
+    A1[Ashigaru 1<br/>sonnet]
+    A2[Ashigaru 2<br/>sonnet]
+    A3[Ashigaru 3<br/>sonnet]
+    A4[Ashigaru 4<br/>sonnet]
+    A5[Ashigaru 5<br/>sonnet]
+    A6[Ashigaru 6<br/>sonnet]
+    A7[Ashigaru 7<br/>sonnet]
+    Gunshi[Gunshi<br/>opus — QA / merge]
+
+    You --> Shogun
+    Shogun --> Karo
+    Karo --> A1 & A2 & A3 & A4 & A5 & A6 & A7
+    A1 & A2 & A3 & A4 & A5 & A6 & A7 --> Gunshi
+
+    classDef opus fill:#7a3a8a,stroke:#fff,color:#fff
+    classDef worker fill:#5a5aaa,stroke:#fff,color:#fff
+    classDef user fill:#3a8a8a,stroke:#fff,color:#fff
+
+    class You user
+    class Shogun,Karo,Gunshi opus
+    class A1,A2,A3,A4,A5,A6,A7 worker
 ```
 
 ### When Claude Suggests It
