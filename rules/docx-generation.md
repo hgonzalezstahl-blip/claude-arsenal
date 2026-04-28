@@ -204,6 +204,34 @@ If the new document deviates from the master at a given transition, normalize to
 - **Cloned paragraphs lose their adjacent empty** — when you `clone_paragraph_after()` to add a new bullet, the empty paragraph that originally followed the cloned reference is now between the clone and the next content, not between the original and the clone. Verify the spacing before/after the insertion site.
 - **First-time additions inherit no empty** — when a new section is being added (e.g., a Languages line that wasn't in the master), there's no template precedent. Use the spacing pattern of the most similar existing transition as the model.
 
+**Empty paragraphs are coarse spacing — use `space-before` / `space-after` for fine control:**
+
+An empty paragraph inherits the document's line-height (typically `line=276` = 1.15 × 11pt = ~13pt of vertical space). That's a *fixed* unit of spacing. When the master has 0 empty paragraphs at a transition but the visual gap feels too tight, the right fix is **NOT** to add an empty paragraph — that creates ~13pt of space, which is often too much. Instead, apply `space-before` (or `space-after`) directly to the affected paragraph.
+
+**Worked example — the user's master Core Competencies → PROFESSIONAL EXPERIENCE transition:**
+- Master pattern: 0 empty paragraphs (looks visually tight to the user)
+- Adding 1 empty paragraph: ~13pt of space — felt too tall, breaks rhythm
+- Adding `space-before: 12pt` to PROFESSIONAL EXPERIENCE: ~60% of an empty paragraph's height — landed in the sweet spot
+
+```python
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+def set_space_before(para, points):
+    pPr = para._p.get_or_add_pPr()
+    spc = pPr.find(qn('w:spacing'))
+    if spc is None:
+        spc = OxmlElement('w:spacing')
+        pPr.append(spc)
+    spc.set(qn('w:before'), str(int(points * 20)))  # twentieths-of-a-point
+```
+
+**Rule of thumb for fine-tuning:**
+- Master has 0 empties at transition + visual feels too tight → try `space-before: 12pt` first
+- If still too tight → bump to 18pt
+- If too much → drop to 6pt or 8pt
+- Empty paragraph (~13pt fixed) is the "too much" benchmark — use space-before below that threshold
+
 **Static targets are useful only as a sanity check, not as a hard rule:**
 
 | Transition | Typical pattern (master may differ) |
