@@ -131,7 +131,7 @@ This is especially important for inserted sections (a new appendix, a new callou
 **Rule:** All output files (Word documents, PDFs, markdown deliverables, generated artifacts) use **spaces, not underscores**, between words in the filename.
 
 Correct: `Final Policy Brief V4 [LastName].docx`
-Wrong: `Final_Policy_Brief_V4_[LastName].docx`
+Wrong: `Final_Policy_Brief_V4_Gonzalez-Stahl.docx`
 
 Hyphens are fine where they're part of a name (`[LastName]`). Underscores are reserved for code files (Python modules, scripts) where they're syntactically required.
 
@@ -193,44 +193,39 @@ def remove_paragraph(para):
 
 ## RULE 9 — Spacing Uniformity Audit (run before declaring any resume / template-based docx complete)
 
-**Problem:** Template mutation can leave the document in a state where some role-to-role transitions have 1 empty paragraph (clean) while others have 6 (orphaned from the original's structure when content was removed). The user spots these inconsistencies immediately. We caught them once but only after the user flagged them.
+**Problem:** Template mutation can leave the document in a state where some role-to-role transitions have 1 empty paragraph (clean) while others have 6 (orphaned from the original's structure when content was removed). The user spots these inconsistencies immediately.
 
-**Rule:** After every template mutation (or any docx generation that involves removing/cloning paragraphs), run an automated spacing audit before declaring done. The target patterns:
+**Rule (ANCHORED TO TEMPLATE, not to a static target):** After every template mutation, audit the new document's empty-paragraph counts at every section/role/project transition by comparing them to the **master template's** counts at the corresponding transitions. The master template is the ground truth — do not enforce a static target like "1 empty between content and section header" because the master may intentionally use 0 at some transitions (e.g., the user's master has 0 empty paragraphs between Core Competencies content and PROFESSIONAL EXPERIENCE, which still looks right because the section header's intrinsic spacing carries the visual weight).
 
-| Transition | Target empty paragraphs |
+If the new document deviates from the master at a given transition, normalize to the master's count. Add empties where the new document has fewer than the master; remove empties where it has more.
+
+**Common deviation sources** (handle these explicitly):
+- **Removed paragraphs leave orphan empties** — e.g., when you remove 2 bullets from a role and the master had 1 empty paragraph after each bullet for visual breathing, the orphans pile up to 6+ between roles. Walk every removal site and clean up orphans afterward.
+- **Cloned paragraphs lose their adjacent empty** — when you `clone_paragraph_after()` to add a new bullet, the empty paragraph that originally followed the cloned reference is now between the clone and the next content, not between the original and the clone. Verify the spacing before/after the insertion site.
+- **First-time additions inherit no empty** — when a new section is being added (e.g., a Languages line that wasn't in the master), there's no template precedent. Use the spacing pattern of the most similar existing transition as the model.
+
+**Static targets are useful only as a sanity check, not as a hard rule:**
+
+| Transition | Typical pattern (master may differ) |
 |---|---|
-| Section header → first content | 2 |
-| Last content of section → next section header | 1 |
-| Role → next role within Professional Experience | 1 |
-| Project → next project within Selected Applied AI Projects | 1 |
-| Degree → next degree within Academics | 1 |
-| Bullet → next bullet within a role | 0 |
-| Role title (italic) → first bullet | 0 |
-| Header / contact / tagline cluster | follows the template's existing pattern |
+| Section header → first content | 2 empty paragraphs |
+| Last content of section → next section header | 0 OR 1 empty paragraphs (varies by section in this user's master — verify per transition) |
+| Role → next role within Professional Experience | 1 empty paragraph |
+| Project → next project within Selected Applied AI Projects | 1 empty paragraph |
+| Degree → next degree within Academics | 1 empty paragraph |
+| Bullet → next bullet within a role | 0 empty paragraphs |
+| Role title (italic) → first bullet | 0 empty paragraphs |
 
-**Verification routine — must catch BOTH extras and missing empties:**
+**Verification routine — anchored to the master template:**
 
 ```python
-def audit_spacing(doc):
-    """Walk paragraphs, report transitions where empty-paragraph count
-    deviates from target. Catches BOTH extras (e.g., 6 empty paras between
-    roles) AND missing empties (e.g., 0 empty paras between Core Competencies
-    content and PROFESSIONAL EXPERIENCE — caught only if you check zero too).
-    """
+def build_transition_map(doc):
+    """Return a dict mapping (prev_text_signature, curr_text_signature) →
+    empty_paragraph_count. Each key represents a transition between two
+    non-empty paragraphs; the value is how many empty paragraphs sit between them.
+    Use the first 60 chars of each paragraph as a stable signature."""
     paras = list(doc.paragraphs)
-    issues = []
-    SECTION_HEADERS = (
-        "SIGNATURE ACHIEVEMENTS", "CORE COMPETENCIES", "PROFESSIONAL EXPERIENCE",
-        "SELECTED APPLIED AI PROJECTS", "ACADEMICS", "TECHNICAL SKILLS",
-    )
-
-    def is_section(text):
-        return any(text.strip().startswith(h) for h in SECTION_HEADERS)
-
-    def is_empty(p):
-        return not p.text.strip()
-
-    # Walk transitions
+    transitions = {}
     prev_text = None
     empty_run = 0
     for p in paras:
@@ -239,28 +234,36 @@ def audit_spacing(doc):
             empty_run += 1
             continue
         if prev_text is not None:
-            # Determine expected gap
-            expected = None
-            if is_section(text):
-                expected = 1  # last-content → next-section-header
-            elif is_section(prev_text):
-                expected = 2  # section-header → first-content
-            # CRITICAL: this check fires even when empty_run == 0,
-            # which catches the missing-empty case.
-            if expected is not None and empty_run != expected:
-                issues.append((
-                    f"{prev_text[:40]} → {text[:40]}",
-                    empty_run,
-                    expected,
-                ))
+            key = (prev_text[:60], text[:60])
+            transitions[key] = empty_run
         empty_run = 0
         prev_text = text
-    return issues
+    return transitions
+
+
+def audit_spacing_against_template(new_doc_path, template_doc_path,
+                                   section_correspondence):
+    """Compare the new doc's empty-paragraph counts to the template's at every
+    corresponding transition. Returns list of (label, observed, expected) tuples
+    where observed != expected.
+
+    section_correspondence: dict mapping new-doc text-prefix → template text-prefix
+    for paragraphs that have changed text but represent the same structural
+    location (e.g., 'Supply Chain Planning Architecture' → 'AI Workflow Design').
+    Lets the comparator align corresponding transitions across the two docs."""
+    from docx import Document
+    new_doc = Document(new_doc_path)
+    tmpl = Document(template_doc_path)
+    new_transitions = build_transition_map(new_doc)
+    tmpl_transitions = build_transition_map(tmpl)
+    # ... compare structural pairs, normalize where they differ ...
 ```
 
-**Do not** structure the audit with `if empty_run > 0 and prev:` — that pattern silently ignores zero-empty transitions and misses cases like Core-Competencies-content directly followed by PROFESSIONAL-EXPERIENCE.
+The pseudocode above is intentionally schematic — implementation depends on the document type. **The principle is what matters:** the master template defines correct spacing, not a static rule.
 
-If `audit_spacing()` returns any issues, normalize them automatically before saving. Do not deliver a resume with spacing inconsistencies.
+**Static-target sanity check (use as fallback only):** the audit may run a static check using the typical-pattern table above as a smoke test, but a static target failure should not auto-trigger normalization without checking the master first. The master is authoritative.
+
+If the audit returns issues, normalize them to match the master before saving. Do not deliver a resume with spacing inconsistencies — and do not over-correct by enforcing rules the master doesn't follow.
 
 **For Pitch specifically:** the spacing audit step happens between the Pre-Delivery Checklist (Step 6b in pitch.md) and the ATS + format check (Step 6c). Add as Step 6d. Pitch must run this for every resume / cover letter / template-based docx delivery.
 

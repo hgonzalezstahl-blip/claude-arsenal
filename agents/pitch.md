@@ -113,18 +113,24 @@ Use `shutil.copy()` to clone the template, then surgically replace text in parag
 
 Building from scratch with python-docx — even carefully — silently breaks visual fidelity (wrong font, wrong margins, missing bold-pattern bullets, missing accent lines). The user spots this immediately. Do not do it.
 
-### Step 6d — Self-audit pass 3d: spacing uniformity audit
+### Step 6d — Self-audit pass 3d: spacing uniformity audit (master-anchored)
 
-After every template mutation, run the spacing audit defined in `~/.claude/rules/docx-generation.md` Rule 9. The audit must catch BOTH extras (e.g., 6 empty paragraphs between roles where 1 is expected) AND missing empties (e.g., 0 empty paragraphs between Core Competencies content and PROFESSIONAL EXPERIENCE where 1 is expected). Target patterns:
+After every template mutation, audit the new document's empty-paragraph counts at every section/role/project transition by comparing them to the **master template's** counts at the corresponding transitions. The master template is the ground truth — do not enforce static targets that the master itself doesn't follow.
 
-- Section header → first content: 2 empty paragraphs
-- Last content of section → next section header: 1 empty paragraph
-- Role → next role within Professional Experience: 1 empty paragraph
-- Project → next project within Selected Applied AI Projects: 1 empty paragraph
-- Degree → next degree within Academics: 1 empty paragraph
-- Bullet → next bullet within a role: 0 empty paragraphs
+**Why master-anchored, not rule-based:** the user's master has 0 empty paragraphs between Core Competencies content and PROFESSIONAL EXPERIENCE (the section header's intrinsic spacing carries the visual weight). A static rule that enforces "1 empty paragraph between any content and any next section header" would over-correct and add an empty paragraph that wasn't in the master, creating MORE space than the user wants. We caught this exact issue once — Pitch must not repeat it.
 
-If the audit returns any inconsistencies, normalize them automatically before saving. Do not deliver a resume with spacing irregularities — the user will spot them and lose trust.
+Process:
+1. Build a transition map for the new doc: dict of `(prev_text, curr_text) → empty_paragraph_count`
+2. Build the same map for the master template
+3. For every transition that exists in both, compare counts
+4. Where they differ, normalize the new doc to match the master's count
+
+Common deviation sources to clean up:
+- **Removed paragraphs leave orphan empties** — if you remove bullets from a role, the empty paragraphs that used to follow them may pile up between roles. Walk every removal site and clean up orphans.
+- **Cloned paragraphs lose their adjacent empty** — `clone_paragraph_after()` puts the clone immediately adjacent to the reference; the empty paragraph that originally followed is now in the wrong position.
+- **First-time additions inherit no empty** — for content that wasn't in the master, model the spacing pattern on the most similar existing transition.
+
+If the audit returns any inconsistencies, normalize them to match the master before saving. Do not deliver a resume with spacing irregularities — and do not over-correct by enforcing rules the master doesn't follow.
 
 ### Step 6e — Self-audit pass 3e: ATS + format check
 
