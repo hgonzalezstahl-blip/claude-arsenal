@@ -151,6 +151,121 @@ For any generated docx that includes:
 
 ---
 
+## RULE 8 — Template Mutation for Resumes (and any user-format-bound document)
+
+**Problem:** Rebuilding a resume from scratch with python-docx — even carefully — drops formatting fidelity. The user's March 2026 master uses Garamond, 0.30" margins, 10pt body, specific bold-pattern bullets (one "hero" bullet per role gets bolded), centered ALL-CAPS section headers with no horizontal accent line. Rebuilding from scratch with default Calibri/0.7" margins produced a doc that the user immediately spotted as "off."
+
+**Rule:** When generating a document that must match an existing user template (resume, cover letter, formatted memo), **load the source file as a template and mutate text in place** — do not rebuild.
+
+```python
+import shutil, copy
+from docx import Document
+
+# 1. Copy template to new path
+shutil.copy(SOURCE_TEMPLATE, NEW_PATH)
+doc = Document(NEW_PATH)
+
+# 2. Replace paragraph text while preserving formatting of the FIRST run.
+def replace_para_text(para, new_text):
+    if not para.runs:
+        para.add_run(new_text); return
+    para.runs[0].text = new_text
+    for run in para.runs[1:]:
+        run._element.getparent().remove(run._element)
+
+# 3. To insert a new bullet, deepcopy a sibling bullet and replace its text.
+def clone_paragraph_after(reference_para, new_text):
+    new_p = copy.deepcopy(reference_para._p)
+    reference_para._p.addnext(new_p)
+    from docx.text.paragraph import Paragraph
+    new_para = Paragraph(new_p, reference_para._parent)
+    replace_para_text(new_para, new_text)
+    return new_para
+
+# 4. To remove a paragraph (e.g., dropping a bullet not in the new content):
+def remove_paragraph(para):
+    para._element.getparent().remove(para._element)
+```
+
+**This is non-negotiable for resumes.** The Pitch resume-format.md already specifies it — agents that deviate must be corrected. The rule applies whenever the user has supplied a reference template (e.g., "use my March 2026 master format"). For new artifacts the user hasn't templated (e.g., a new policy brief format), building from scratch with python-docx is fine.
+
+---
+
+## RULE 9 — Spacing Uniformity Audit (run before declaring any resume / template-based docx complete)
+
+**Problem:** Template mutation can leave the document in a state where some role-to-role transitions have 1 empty paragraph (clean) while others have 6 (orphaned from the original's structure when content was removed). The user spots these inconsistencies immediately. We caught them once but only after the user flagged them.
+
+**Rule:** After every template mutation (or any docx generation that involves removing/cloning paragraphs), run an automated spacing audit before declaring done. The target patterns:
+
+| Transition | Target empty paragraphs |
+|---|---|
+| Section header → first content | 2 |
+| Last content of section → next section header | 1 |
+| Role → next role within Professional Experience | 1 |
+| Project → next project within Selected Applied AI Projects | 1 |
+| Degree → next degree within Academics | 1 |
+| Bullet → next bullet within a role | 0 |
+| Role title (italic) → first bullet | 0 |
+| Header / contact / tagline cluster | follows the template's existing pattern |
+
+**Verification routine — must catch BOTH extras and missing empties:**
+
+```python
+def audit_spacing(doc):
+    """Walk paragraphs, report transitions where empty-paragraph count
+    deviates from target. Catches BOTH extras (e.g., 6 empty paras between
+    roles) AND missing empties (e.g., 0 empty paras between Core Competencies
+    content and PROFESSIONAL EXPERIENCE — caught only if you check zero too).
+    """
+    paras = list(doc.paragraphs)
+    issues = []
+    SECTION_HEADERS = (
+        "SIGNATURE ACHIEVEMENTS", "CORE COMPETENCIES", "PROFESSIONAL EXPERIENCE",
+        "SELECTED APPLIED AI PROJECTS", "ACADEMICS", "TECHNICAL SKILLS",
+    )
+
+    def is_section(text):
+        return any(text.strip().startswith(h) for h in SECTION_HEADERS)
+
+    def is_empty(p):
+        return not p.text.strip()
+
+    # Walk transitions
+    prev_text = None
+    empty_run = 0
+    for p in paras:
+        text = p.text.strip()
+        if not text:
+            empty_run += 1
+            continue
+        if prev_text is not None:
+            # Determine expected gap
+            expected = None
+            if is_section(text):
+                expected = 1  # last-content → next-section-header
+            elif is_section(prev_text):
+                expected = 2  # section-header → first-content
+            # CRITICAL: this check fires even when empty_run == 0,
+            # which catches the missing-empty case.
+            if expected is not None and empty_run != expected:
+                issues.append((
+                    f"{prev_text[:40]} → {text[:40]}",
+                    empty_run,
+                    expected,
+                ))
+        empty_run = 0
+        prev_text = text
+    return issues
+```
+
+**Do not** structure the audit with `if empty_run > 0 and prev:` — that pattern silently ignores zero-empty transitions and misses cases like Core-Competencies-content directly followed by PROFESSIONAL-EXPERIENCE.
+
+If `audit_spacing()` returns any issues, normalize them automatically before saving. Do not deliver a resume with spacing inconsistencies.
+
+**For Pitch specifically:** the spacing audit step happens between the Pre-Delivery Checklist (Step 6b in pitch.md) and the ATS + format check (Step 6c). Add as Step 6d. Pitch must run this for every resume / cover letter / template-based docx delivery.
+
+---
+
 ## RULES THAT WORKED — KEEP DOING
 
 These are patterns that were praised in human review and should be the default going forward:
