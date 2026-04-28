@@ -34,6 +34,8 @@ Run structured persona simulations against a given feature, module, or user flow
 
 Luna does NOT rely on a fixed roster. For every evaluation, Luna generates the right personas from scratch based on the product and feature being tested.
 
+The agent files `luna-host.md`, `luna-guest.md`, and `luna-owner.md` exist as **canonical reference examples** of well-formed Rekaliber persona briefs — Luna may read them when generating new Rekaliber personas to anchor on tone and depth, but should not invoke them as fixed personas. They are reference material, not active casting.
+
 ### Step 1 — ANALYZE THE CONTEXT
 
 Before generating any personas, understand:

@@ -9,6 +9,41 @@ const path = require('path');
 const HOME = process.env.HOME || process.env.USERPROFILE;
 const AUDIT_FILE = path.join(HOME, '.claude', 'agent-audit.jsonl');
 const REPORTS_DIR = path.join(HOME, '.claude', 'session-reports');
+const ERROR_LOG = path.join(REPORTS_DIR, 'errors.log');
+
+// Pricing per million tokens (USD). Update when Anthropic pricing changes.
+// Cache read = 10% of input price. Cache write = 125% of input price (1.25x).
+const PRICING = {
+  opus:   { input: 15.00, output: 75.00, cache_read: 1.50,  cache_write: 18.75 },
+  sonnet: { input: 3.00,  output: 15.00, cache_read: 0.30,  cache_write: 3.75  },
+  haiku:  { input: 1.00,  output: 5.00,  cache_read: 0.10,  cache_write: 1.25  },
+};
+const DEFAULT_TIER = 'opus'; // fallback when model can't be detected
+
+function modelToTier(modelString) {
+  if (!modelString || typeof modelString !== 'string') return DEFAULT_TIER;
+  const m = modelString.toLowerCase();
+  if (m.includes('opus'))   return 'opus';
+  if (m.includes('sonnet')) return 'sonnet';
+  if (m.includes('haiku'))  return 'haiku';
+  return DEFAULT_TIER;
+}
+
+function logError(stage, err, sessionId) {
+  try {
+    if (!fs.existsSync(REPORTS_DIR)) fs.mkdirSync(REPORTS_DIR, { recursive: true });
+    const line = JSON.stringify({
+      timestamp: new Date().toISOString(),
+      session_id: sessionId || 'unknown',
+      stage,
+      error: err && err.message ? err.message : String(err),
+      stack: err && err.stack ? err.stack.split('\n').slice(0, 4).join(' | ') : null,
+    }) + '\n';
+    fs.appendFileSync(ERROR_LOG, line);
+  } catch (_) {
+    // last-resort: writing the error log itself failed; nothing more we can do without breaking the hook
+  }
+}
 
 let input = '';
 process.stdin.setEncoding('utf8');
@@ -68,23 +103,33 @@ process.stdin.on('end', () => {
         let totalOutputTokens = 0;
         let totalCacheRead = 0;
         let totalCacheCreation = 0;
+        const tierTokenCounts = { opus: 0, sonnet: 0, haiku: 0 }; // weight by tokens, not message count
 
         for (const line of transcript) {
           try {
             const msg = JSON.parse(line);
-            if (msg.usage) {
-              totalInputTokens += msg.usage.input_tokens || 0;
-              totalOutputTokens += msg.usage.output_tokens || 0;
-              totalCacheRead += msg.usage.cache_read_input_tokens || 0;
-              totalCacheCreation += msg.usage.cache_creation_input_tokens || 0;
+            const usage = msg.usage || (msg.message && msg.message.usage) || null;
+            const model = msg.model || (msg.message && msg.message.model) || null;
+            if (usage) {
+              const inTok    = usage.input_tokens || 0;
+              const outTok   = usage.output_tokens || 0;
+              const cacheR   = usage.cache_read_input_tokens || 0;
+              const cacheW   = usage.cache_creation_input_tokens || 0;
+              totalInputTokens   += inTok;
+              totalOutputTokens  += outTok;
+              totalCacheRead     += cacheR;
+              totalCacheCreation += cacheW;
+              const tier = modelToTier(model);
+              tierTokenCounts[tier] += inTok + outTok + cacheR + cacheW;
             }
-            // Also check nested usage in response messages
-            if (msg.message && msg.message.usage) {
-              totalInputTokens += msg.message.usage.input_tokens || 0;
-              totalOutputTokens += msg.message.usage.output_tokens || 0;
-            }
-          } catch (e) { /* skip */ }
+          } catch (e) { /* skip malformed transcript lines */ }
         }
+
+        // Pick the tier that handled the most tokens this session
+        const dominantTier = Object.entries(tierTokenCounts)
+          .sort((a, b) => b[1] - a[1])[0][0];
+        const tierUsed = tierTokenCounts[dominantTier] > 0 ? dominantTier : DEFAULT_TIER;
+        const price = PRICING[tierUsed];
 
         report.tokens = {
           input: totalInputTokens,
@@ -97,19 +142,28 @@ process.stdin.on('end', () => {
             : '0%',
         };
 
-        // Estimate cost (Opus pricing: $15/M input, $75/M output; cached input $1.875/M)
-        const uncachedInput = totalInputTokens - totalCacheRead;
+        // Estimate cost — model-tier-aware, includes cache write cost
+        // Note: input_tokens from Anthropic API is already exclusive of cache read/write tokens
+        // (cache read and cache_creation are billed separately, not double-counted)
+        const inputCost       = (totalInputTokens   / 1_000_000) * price.input;
+        const cacheReadCost   = (totalCacheRead     / 1_000_000) * price.cache_read;
+        const cacheWriteCost  = (totalCacheCreation / 1_000_000) * price.cache_write;
+        const outputCost      = (totalOutputTokens  / 1_000_000) * price.output;
+        const totalCost       = inputCost + cacheReadCost + cacheWriteCost + outputCost;
+
         report.estimated_cost = {
-          input_usd: ((uncachedInput / 1_000_000) * 15).toFixed(4),
-          cached_input_usd: ((totalCacheRead / 1_000_000) * 1.875).toFixed(4),
-          output_usd: ((totalOutputTokens / 1_000_000) * 75).toFixed(4),
-          total_usd: (
-            (uncachedInput / 1_000_000) * 15 +
-            (totalCacheRead / 1_000_000) * 1.875 +
-            (totalOutputTokens / 1_000_000) * 75
-          ).toFixed(4),
+          model_tier:        tierUsed,
+          tier_token_share:  tierTokenCounts,
+          input_usd:         inputCost.toFixed(4),
+          cached_input_usd:  cacheReadCost.toFixed(4),
+          cache_write_usd:   cacheWriteCost.toFixed(4),
+          output_usd:        outputCost.toFixed(4),
+          total_usd:         totalCost.toFixed(4),
+          pricing_note:      'Verify against current Anthropic pricing — see PRICING table at top of session-report.js',
         };
-      } catch (e) { /* transcript parsing failed */ }
+      } catch (e) {
+        logError('transcript_parse', e, sessionId);
+      }
     }
 
     // Write report
@@ -129,6 +183,9 @@ process.stdin.on('end', () => {
     }) + '\n');
 
   } catch (e) {
-    // Silent fail
+    // Don't break the Stop hook chain — but log the error so it's debuggable
+    let sid = 'unknown';
+    try { sid = JSON.parse(input).session_id || 'unknown'; } catch (_) {}
+    logError('main', e, sid);
   }
 });

@@ -1,23 +1,77 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Agents-39-blueviolet?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Agents-40-blueviolet?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Skills-6-9cf?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Plugins-23-blue?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Copilot_Skills-8-green?style=for-the-badge" />
   <img src="https://img.shields.io/badge/MCP_Servers-8-orange?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Hooks-15-red?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Rules-5-yellow?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Rules-6-yellow?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Knowledge_RAG-Active-brightgreen?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Dashboard-Live-brightgreen?style=for-the-badge" />
 </p>
 
 # Claude Arsenal
 
-> A production-grade multi-agent system for Claude Code — 39 specialized agents across 5 teams, 23 plugins, 15 lifecycle hooks, 8 MCP servers, a live session dashboard, semantic RAG knowledge vault, full audit trail, Shogun parallel execution (10 agents via tmux), and a GitHub Copilot framework port. Engineering standards enforced automatically, every session.
+> A production-grade multi-agent system for Claude Code — **40 specialized agents** across 5 teams, **6 user-built skills** that enforce systems-thinking discipline, 23 plugins, 15 lifecycle hooks, 8 MCP servers, a live session dashboard, semantic RAG knowledge vault, full audit trail, Shogun parallel execution (10 agents via tmux), and a GitHub Copilot framework port. Engineering standards enforced automatically, every session.
 
 Built by [Hector Gonzalez-Stahl](https://github.com/hgonzalezstahl-blip)
 
 ---
 
+## Why this arsenal?
+
+Most AI coding setups optimize for the first ten minutes — fast prompts, fast generation, fast results. They break at the seams: state lives in two places, observability is missing, parallel agents make conflicting choices, and the human shipping the code can't answer "what breaks if I delete this?"
+
+This arsenal is built around the opposite premise: **systems thinking is the skill, not prompting.** Every layer — the agents, the skills, the gates, the hooks — exists to keep the discipline visible while AI does the typing.
+
+| Principle | What it means in practice |
+|---|---|
+| **Theory before code** | `rex-architect` writes ADRs before parallel sub-agents touch the codebase. No silent conflicts at integration time. |
+| **Comprehension over speed** | After autonomous work completes, `checkpoint` walks the human through the change in concern-order with blast-radius hotspots. |
+| **The Three Questions gate** | Code that compiles but cannot answer state / feedback / blast radius FAILs `rex-qa`. Coherent or not done. |
+| **Adversarial discipline** | Reviewers must find issues. "Looks good" is not allowed. Applied to specs, plans, prose, and agent definitions — not just code. |
+| **Multiple lenses, one decision** | `roundtable` convenes Vault + Spark + Luna + Scout (or any cast) to debate cross-domain decisions instead of picking the one orchestrator's view. |
+| **Memory that compounds** | `retrospective` writes durable lessons (feedback / project / reference) so the same mistake doesn't repeat across sessions. |
+| **Audit by default** | Every agent spawn, every tool call, every Stop event is logged. Cost and context tracked per session, model-tier-aware. |
+
+---
+
+## Table of Contents
+
+- [What's New](#whats-new) — version history
+- [Quick Start](#quick-start) — install + first run
+- [What's Inside](#whats-inside) — directory tree
+- [System Architecture](#system-architecture) — request → orchestrator → agent flow
+- [Live Session Dashboard](#live-session-dashboard) — real-time monitoring
+- **Agents**
+  - [Rex](#rex--project-orchestration-engine) — 17 agents, full engineering lifecycle
+  - [Luna](#luna--dynamic-persona-testing) — dynamic UX persona testing
+  - [Spark](#spark--creative--marketing-agency) — 7 agents, full marketing team
+  - [Vault](#vault--financial-analysis-team) — 4 agents, financial modeling
+  - [Auditor](#auditor--external-codebase-audit) — non-Rekaliber audit specialist
+  - [General Purpose](#general-purpose-agents) — planning, intelligence, simulation
+- [Skills](#skills--portable-discipline) — 6 user-built skills (systems thinking)
+- [Infrastructure](#infrastructure-layer) — hooks, rules, plugins, MCP, knowledge vault
+- [Shogun](#shogun--parallel-execution-engine) — 10 parallel agents via tmux
+- [Copilot Framework](#copilot-framework-8-skills) — same gates for GitHub Copilot
+- [Full Summary](#full-summary) — counts table
+
+---
+
 ## What's New
+
+### v5 — April 27, 2026 (Systems-Thinking Layer + BMAD-Inspired Discipline)
+
+| Change | Details |
+|:-------|:--------|
+| **6 user-built skills** | `elicit` (9 reasoning methods incl. pre-mortem), `checkpoint` (concern-ordered walkthrough after autonomous work), `roundtable` (multi-orchestrator debate), `adversarial-review` (force-find-issues for non-code artifacts), `retrospective` (writes durable feedback memory), `three-questions` (state / feedback / blast radius gate). All auto-invoke on context match. |
+| **New `auditor` agent** | Read-only structural audit for codebases the user did not write — Lovable, Bolt, Cursor, v0, inherited. 7-layer protocol (architecture, safety, data integrity, observability, failure modes, scaling, maintainability). Severity-tagged findings, plain-English impact for non-tech founders, continue / patch / rebuild / hire recommendation. Auto-declines Rekaliber audits. |
+| **`rex-qa` gains Three Questions gate** | Step 8 added. Code that compiles but cannot answer state / feedback / blast radius now FAILs QA. Coherent or not done. |
+| **`rex-architect` gains ADR generation** | Mandatory Architecture Decision Records before any multi-module / multi-agent feature. Prevents parallel sub-agents from making conflicting technical choices. Includes a worked example (timezone handling) so generated ADRs have an anchor for specificity. Bumped to `effort: high`. |
+| **Solutioning rule** | New `rules/solutioning-adr.md` — cross-agent contract that all rex sub-agents read before generating code on multi-module work. |
+| **`session-report.js` hardened** | Model-tier-aware cost calc (Opus / Sonnet / Haiku detected from transcript). Cache write cost included in total. Errors logged to `session-reports/errors.log` instead of silently swallowed. |
+| **Trigger collisions resolved** | `elicit` vs `adversarial-review` vs `vault-auditor` vs `rex-redteam` vs code reviewers — disambiguated in CLAUDE.md with explicit tiebreakers. Working-directory match (Rekaliber) takes precedence over every other auto-invocation. |
+| **Project routing added** | Lean AI app, Lean AI Content Ecosystem, Punto Azul, and one-off Echo/Pitch deliverables now have explicit default-orchestrator routing in CLAUDE.md. |
 
 ### v4 — April 22, 2026 (Shogun Integration + Cleanup)
 
@@ -115,9 +169,18 @@ claude-arsenal/
 │   ├── luna/                # 6 UX persona testing agents
 │   ├── spark/               # 7 creative/marketing agency agents
 │   ├── vault/               # 4 financial analysis agents
+│   ├── auditor.md           # External codebase audit (Lovable / Bolt / inherited)
 │   └── general/             # 5 general-purpose agents
+├── skills/                  # 6 user-built skills (systems thinking)
+│   ├── three-questions/     # State / feedback / blast-radius gate
+│   ├── checkpoint/          # Concern-ordered walkthrough after autonomous work
+│   ├── elicit/              # 9 reasoning methods (pre-mortem, inversion, etc.)
+│   ├── adversarial-review/  # Force-find-issues for non-code artifacts
+│   ├── roundtable/          # Multi-orchestrator debate (Rex + Vault + Spark + ...)
+│   └── retrospective/       # Three-bucket retro that writes durable memory
 ├── dashboard/               # Live multi-session monitor (Node.js)
 ├── rules/                   # Path-scoped rules (auto-load by file type)
+├── hooks/                   # 15 lifecycle hooks (audit, format, security, reports)
 ├── knowledge/               # RAG-indexed knowledge vault
 ├── copilot-framework/       # GitHub Copilot port (8 skills)
 ├── templates/               # CLAUDE.md + settings.json templates
@@ -456,6 +519,37 @@ Every deliverable is scored 1-10 on four dimensions:
 
 ---
 
+## Auditor — External Codebase Audit
+
+> Read-only structural audit for codebases the user did not write line-by-line — Lovable, Bolt, Cursor, v0, junior-built, inherited. Auto-declines Rekaliber audits and routes them to the Rex pipeline instead.
+
+### When Auditor Fires
+
+- Non-technical founder shows code from Lovable / Bolt / Cursor and asks "is this safe to scale?"
+- An inherited codebase needs a structural review before continued investment
+- A vibe-coded project has paying customers and the user wants to know what's about to break
+- The user pastes code from an unfamiliar codebase and asks for review
+
+### The 7-Layer Protocol
+
+| Layer | What It Checks |
+|:-----:|:---------------|
+| 1. Architectural coherence | State ownership, observability layers, blast radius (calls `three-questions`); file-size red flags; module boundaries |
+| 2. Safety surface | Auth, authz, input validation, rate limiting, server secrets, **client-bundle secrets**, **CSP**, CORS / CSRF |
+| 3. Data integrity | Schema constraints, indexes, migrations, transactions, idempotency, soft vs hard deletes, backups |
+| 4. Observability | Structured logs, error capture, business metrics, real health checks |
+| 5. Failure modes | Job retries, dead-letter queues, external API timeouts, webhook idempotency, payment race conditions, concurrency |
+| 6. Scaling / cost | N+1 queries, unbounded queries, caching, payload sizes, sync work that should be async, cost-per-user |
+| 7. Maintainability ceiling | Duplication, naming, tests, type safety, dependency hygiene, documentation |
+
+### Output
+
+Severity-tagged findings (`CRITICAL` / `HIGH` / `MEDIUM` / `LOW`) with **Plain-English impact** required on every HIGH or CRITICAL — non-technical founders get "your DB will time out at 1000 customers" not "N+1 query pattern."
+
+Ends with a recommendation: **CONTINUE** / **PATCH** / **REBUILD** / **HIRE** (or any combination — `B+D` and `C+D` are common). Honest pick — over-recommending REBUILD is as harmful as under-recommending it.
+
+---
+
 ## General Purpose Agents
 
 | Agent | Model | Purpose |
@@ -477,6 +571,50 @@ Scout proactively maps the competitive landscape and surfaces opportunities and 
 | Technology scouting | Evaluate new tools, frameworks, and platforms |
 | Partnership evaluation | Assess potential integrations and partnerships |
 | Intelligence briefs | Structured reports with actionable takeaways |
+
+---
+
+## Skills — Portable Discipline
+
+> Six user-built skills that enforce systems-thinking discipline across every project. They are agent-agnostic (work with Rex, Luna, Spark, Vault, Echo, Pitch — anything) and auto-invoke on context match. Built 2026-04-27, inspired by patterns from BMAD-METHOD and the systems-thinking framing in Peter Naur's *Programming as Theory Building* (1985).
+
+### The Six Skills
+
+| Skill | When It Fires | What It Does |
+|:------|:--------------|:-------------|
+| `three-questions` | Inside `rex-qa` as the final gate; before approving multi-file PRs; before declaring AI-generated code done | Forces plain-English answers to: Where does state live? Where does feedback live? What breaks if I delete this? Has a non-code translation branch for financial models, plans, prose. |
+| `checkpoint` | After autonomous work completes (rex-qa pass, Lovable / Bolt build, large PR); when the user says "walk me through this" | Concern-ordered walkthrough (not file-ordered) capped at 5 concerns with scope-sprawl flag if more. Surfaces 2-5 highest blast-radius hotspots tagged by risk. Suggests manual observation tests. |
+| `elicit` | After `ce-plan`, `TaskMaster`, `vault-modeler`, `spark-strategist` produce a high-stakes artifact; when the user says "stress test this", "pre-mortem", "what could go wrong" | Picks one of nine reasoning methods (pre-mortem, inversion, first principles, red/blue team, Socratic, constraint removal, stakeholder mapping, analogical, second-order effects) and applies it. Accepts directly-named methods (`elicit pre-mortem`). |
+| `adversarial-review` | Before signing off on specs, plans, prose, financial models, agent definitions; when the user says "tear this apart", "find the holes", "play devil's advocate" | Force-find-issues review for non-code artifacts. "Looks good" is not allowed — re-read with a fresh stance, then halt with explanation if still zero findings. Different from code reviewers and `rex-redteam`. |
+| `roundtable` | High-stakes decisions that cross orchestrator boundaries (pricing, build vs buy, launch readiness, inherited-codebase decisions, cross-domain planning) | Convenes 3-5 orchestrators (Rex, Vault, Spark, Luna, Scout, Auditor, TaskMaster) into one debate. Reads each persona file before voicing them. Surfaces real disagreement; deadlock has an exit ramp. Orchestrators are simulated in-conversation, not spawned as sub-agents. |
+| `retrospective` | After `rex-qa` passes a notable module; after Spark / Vault / Echo / Pitch deliver a major artifact; **after the user receives external review** of a deliverable; when the user catches the agent making the same mistake twice | Three-bucket retro (worked / broke / now know) that proposes durable memory writes (`feedback`, `project`, `reference`). Explicit confirmation gate before any memory file is written. |
+
+### The Nine Elicit Methods
+
+| Method | Best For |
+|:-------|:---------|
+| Pre-mortem | Specs, launch plans, architecture decisions, financial projections, hiring decisions |
+| Inversion | Strategy, security review, UX decisions |
+| First principles | Architecture, pricing, anything that "everyone does it this way" |
+| Red team / blue team | Security architecture, competitive positioning, contentious technical decisions |
+| Socratic questioning | Product claims, market sizing, "this will obviously work" reasoning |
+| Constraint removal | Architecture, scope decisions, budget planning |
+| Stakeholder mapping | Launches, internal-tools rollouts, pricing changes, anything multi-party |
+| Analogical reasoning | Novel products, new market entry, organizational design |
+| Second-order effects | Policy decisions, pricing changes, platform rule changes, hiring patterns |
+
+### Trigger Tiebreakers
+
+Multiple skills could fire on adjacent phrasing. The CLAUDE.md tiebreaker rules:
+
+| User phrasing pattern | Wins |
+|:----------------------|:-----|
+| "stress test this revenue model" / "stress test the pricing" | `vault-auditor` |
+| "tear this apart" / "find the holes" / "what am I missing" | `adversarial-review` |
+| "stress test this" / "pre-mortem" / "what could go wrong" / "rethink this" | `elicit` |
+| Code adversarial review | `compound-engineering:review:adversarial-reviewer` |
+| Agent definitions / prompts | `rex-redteam` |
+| Anything inside `~/rekaliber` | Rex (working-directory match wins everything) |
 
 ---
 
@@ -510,6 +648,8 @@ Scout proactively maps the competitive landscape and surfaces opportunities and 
 | `nestjs-backend.md` | `*.service.ts`, `*.controller.ts`, `*.dto.ts` | Controller->Service pattern, DI, response format |
 | `frontend-react.md` | `*.tsx`, `*.jsx`, `components/**` | Service layer, TanStack Query, shadcn/ui, App Router |
 | `prisma-database.md` | `*.prisma`, `migrations/**` | Index conventions, soft deletes, multi-tenant scoping |
+| `solutioning-adr.md` | All rex sub-agents on multi-module work | ADR contract: read first, honor cross-agent rules, cite in status, disagree explicitly never silently |
+| `docx-generation.md` | Echo, Pitch, any agent producing Word documents | APA italic rules, stat callouts vs data tables, voice sampling, file naming, page-count flagging |
 
 ### Plugins (22 Installed)
 
@@ -684,17 +824,19 @@ The same quality methodology, ported to GitHub Copilot as skill files. Drop into
 | **Luna** (personas) | 6 | Dynamic persona generation, UX simulation, synthesis |
 | **Spark** (marketing) | 7 | Content creation, strategy, visual design, sales, performance |
 | **Vault** (finance) | 4 | Revenue modeling, market sizing, pricing, fundraising, audit |
+| **Auditor** | 1 | External codebase audit (Lovable / Bolt / Cursor / inherited) |
 | **General** | 5 | Planning, agent review, self-improvement, simulation, intelligence |
+| **Skills** (user-built) | 6 | Systems-thinking discipline: three-questions, checkpoint, elicit, adversarial-review, roundtable, retrospective |
 | **Dashboard** | 1 | Live multi-session monitor with token/cost/context tracking |
 | **Plugins** | 23 | Security auditing, code review, testing, session memory |
 | **MCP Servers** | 8 | qmd RAG, jcodemunch, gitmcp, memory, pal-mcp, claude-mem, Playwright, Gamma |
-| **Hooks** | 14 | Audit trail, agent logging, context pressure, security, formatting, session reports |
-| **Rules** | 5 | Path-scoped conventions (Anthropic API, NestJS, React, Prisma, Rekaliber) |
+| **Hooks** | 15 | Audit trail, agent logging, context pressure, security, formatting, session reports (model-tier-aware) |
+| **Rules** | 6 | Path-scoped conventions: Anthropic API, NestJS, React, Prisma, Rekaliber, solutioning ADRs, DOCX generation |
 | **Knowledge Vault** | 12 | Semantic RAG indexed — ADRs, API docs, patterns, Shogun guide |
 | **Monitoring** | 4 | Ctrl dashboard, claude-mem viewer, session reports, audit summary CLI |
 | **Shogun** | 10 | Parallel execution: 1 Shogun + 1 Karo + 7 Ashigaru + 1 Gunshi (WSL2/tmux) |
 | **Copilot Skills** | 8 | Same quality gates for GitHub Copilot |
-| | **39 agents + 23 plugins + 8 MCP servers + 15 hooks + Shogun + dashboard** | |
+| | **40 agents + 6 skills + 23 plugins + 8 MCP servers + 15 hooks + Shogun + dashboard** | |
 
 ---
 
