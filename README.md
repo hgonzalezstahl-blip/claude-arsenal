@@ -157,6 +157,25 @@ Working-directory match wins over phrasing: anything inside `~/rekaliber` routes
 
 ## What's New
 
+### v5.0.2 — May 3, 2026 (Coordination Drift Cleanup)
+
+| Change | Details |
+|:-------|:--------|
+| **ADR ownership conflict resolved** | `rex-docs` previously claimed to write Architecture Decision Records to `./agents/DECISIONS.md` while `rex-architect` writes them to `docs/adr/NNNN-name.md` per `solutioning-adr.md`. Edited `rex-docs` to write only **module-level decision logs** (lighter scope) and explicitly defer ADRs to `rex-architect`. The whole solutioning-gate discipline depended on a single source of truth — now it has one. |
+| **Dead HTTP hooks stripped** | `settings.json` was firing 14+ hook events to `http://localhost:3001/hooks/claude` — a service that doesn't exist (the dashboard is on port 3333). Removed all dead HTTP fan-out (SessionStart, PreToolUse, PostToolUse, Stop, PostToolUseFailure, StopFailure, SubagentStart, SubagentStop, SessionEnd, TeammateIdle, TaskCompleted, WorktreeCreate, WorktreeRemove, Elicitation). Working hooks (bash/node command type) preserved. |
+| **ADR enforcement wired into rex sub-agents** | `solutioning-adr.md` said "all rex sub-agents read this" — but the prompts didn't reference it. Added explicit `## ADR PROTOCOL` section to `rex-backend`, `rex-frontend`, `rex-database`, `rex-integration`, `rex-tester` (read ADR first, cite it in status, never silently deviate). Added `### 0. ADR Compliance` checklist to `rex-reviewer` so non-compliance bounces back. Added `### 2.5 Solutioning Gate (ADR check)` to `rex-rekaliber-orchestrator` so multi-module work commissions an ADR before delegation. |
+| **`spark-closer` orphan adopted** | Sales agent existed as a file but was missing from `spark.md`'s YOUR TEAM table — orchestrator couldn't spawn it. Added to the table; sales requests now route correctly. |
+| **Luna fixed personas marked REFERENCE ONLY** | `luna-host.md`, `luna-guest.md`, `luna-owner.md` had agent frontmatter that made them discoverable as spawnable agents, despite Luna's design treating them as reference anchors for the Persona Factory. Updated descriptions to make the boundary explicit. |
+| **`knowledge/README.md` qmd alignment** | Replaced stale `knowledge-rag MCP server` reference with `qmd MCP server`. Added explicit `qmd embed` / `qmd update` setup steps and example queries. |
+| **`auditor.md` jcodemunch gated** | Was unconditionally listing `jcodemunch MCP` as available — but it's not configured. Now gated behind "if configured" like every other agent's reference to it. |
+| **`rex-redteam` added to orchestrator delegation** | `rex-rekaliber-orchestrator.md` SUPPORT AGENTS table now includes `rex-redteam` so multi-step orchestrations can chain into adversarial prompt testing. |
+| **Scope boundaries** | `arsenal-optimizer` (audits `~/.claude/`) and `agentic-architect` (audits any project's agent infrastructure) now declare their scope boundary inside their own prompts — no longer a CLAUDE.md-only soft rule. |
+| **Smaller drifts swept** | `pitch.md` "five files" → "seven files" off-by-two; `multi-sim.md` got missing `color:` field; `arsenal_systems_thinking_2026_04_27.md` memory updated with current roundtable cast (Auditor + TaskMaster added). |
+| **Open: TaskMaster filename** | `TaskMaster.agent.md` still uses non-standard CamelCase + `.agent.md` infix. Frontmatter `name:` field is what the loader uses, so functional, but the convention break remains. Audit recommends rename to `taskmaster.md` — pending user decision. |
+| **Open: permission list pruning** | `settings.local.json` has 277 entries; audit identified ~50 reusable patterns and ~225 one-time/stale entries safe to prune. Pending dedicated session. |
+
+Full audit report saved to `reports/arsenal-audit-2026-05-03-full.md`.
+
 ### v5.0.1 — May 3, 2026 (Configuration Hotfixes)
 
 | Change | Details |

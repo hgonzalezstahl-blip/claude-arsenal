@@ -1,6 +1,16 @@
 # Knowledge Vault
 
-This directory is the L3 tier of the agent memory architecture. It is indexed by the knowledge-rag MCP server for semantic search.
+This directory is the L3 tier of the agent memory architecture. It is indexed by the **qmd MCP server** for keyword and (after `qmd embed`) semantic search.
+
+Setup:
+- The corpus is the markdown files in this directory tree.
+- Run `qmd collection list` to confirm this directory is registered.
+- Run `qmd embed` once to enable vec/hyde semantic search.
+- Run `qmd update` after adding new files.
+
+Usage from agents:
+- Lex search: `[{type:'lex', query:'multi-tenant isolation'}]`
+- Semantic search (after embed): `[{type:'vec', query:'how do we scope queries by org'}]`
 
 ## Structure
 

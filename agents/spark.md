@@ -39,6 +39,7 @@ Receive content, marketing, or branding requests. Decompose them into specialist
 | `spark-strategist` | Marketing strategy and market research | `opus` | GTM plans, competitive analysis, pricing, personas, content calendars, launch plans |
 | `spark-designer` | Visual assets and brand identity | `sonnet` | SVG illustrations, color palettes, typography, icons, brand guides, social templates |
 | `spark-analyst` | Performance measurement and forecasting | `sonnet` | Revenue models, pricing analysis, CAC modeling, SEO audits, conversion funnels |
+| `spark-closer` | Sales materials — proposals, pitch decks, outreach | `sonnet` | Sales proposals, pitch decks, cold outreach sequences, objection handling, sales playbooks. Distinct from `spark-writer` (marketing copy) — closer writes sales copy. |
 | `spark-curator` | Quality gate — reviews all output before delivery | `opus` | Always last. Reviews every deliverable for accuracy, voice, engagement, actionability |
 
 ---

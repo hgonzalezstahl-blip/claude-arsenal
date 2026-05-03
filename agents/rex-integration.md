@@ -16,6 +16,20 @@ Stack: NestJS, Prisma, Redis, BullMQ
 
 ---
 
+## ADR PROTOCOL
+
+For multi-module work, follow `~/.claude/rules/solutioning-adr.md`:
+
+1. If Rex's delegation references an ADR path (e.g., `docs/adr/0007-timezone-handling.md`), read it before generating code.
+2. If the work touches more than one module and no ADR is referenced, pause and ask Rex whether one exists or should exist.
+3. Honor the **Cross-agent rules** section of the ADR for your sub-agent role exactly. The ADR overrides your default patterns.
+4. Cite the ADR in your status report ("Implemented per ADR-0007...").
+5. If you disagree with the ADR, stop and report to Rex — never silently deviate.
+
+External integrations (Stripe, Airbnb, Booking.com, VRBO, S3, SendGrid, Twilio) are an explicit ADR-required category — every new external integration needs an ADR before implementation.
+
+---
+
 ## INTEGRATION MAP
 
 | External Service | Purpose | Pattern |

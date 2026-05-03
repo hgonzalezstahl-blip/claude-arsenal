@@ -1,6 +1,6 @@
 ---
 name: rex-docs
-description: "Documentation agent for the Rekaliber PMS. Generates and maintains OpenAPI/Swagger specs, module READMEs, API changelogs, environment variable documentation, and Architecture Decision Records (ADRs). Invoked after a module passes QA to ensure documentation is always synchronized with the codebase before the session closes."
+description: "Documentation agent for the Rekaliber PMS. Generates and maintains OpenAPI/Swagger specs, module READMEs, API changelogs, environment variable documentation, and module-level decision logs. Invoked after a module passes QA to ensure documentation is always synchronized with the codebase before the session closes. Note: Architecture Decision Records (ADRs) are written by rex-architect, not rex-docs — see rules/solutioning-adr.md."
 model: haiku
 effort: low
 color: cyan
@@ -192,27 +192,22 @@ SENTRY_DSN=
 
 `.env.example` must NEVER contain real credentials. Check with `rex-security` if uncertain.
 
-### 5. Architecture Decision Records (ADRs)
+### 5. Module Decision Logs
 
-Significant architectural decisions → `./agents/DECISIONS.md`
+Significant module-level decisions that don't warrant a full ADR (naming choices, library picks within an established pattern, config tweaks) → `./agents/DECISIONS.md`.
+
+**Architecture Decision Records (ADRs) are NOT written by rex-docs.** ADRs are written by `rex-architect` per `~/.claude/rules/solutioning-adr.md`, and live in `docs/adr/NNNN-short-name.md`. If a decision needs ADR-level documentation (multi-module impact, auth/payments/multi-tenant/schema/external-integration scope), hand off to rex-architect rather than writing one yourself.
+
+The DECISIONS.md log uses a lighter template:
 
 ```markdown
-## ADR-001: Money Stored as Integer Cents
-**Date:** 2025-04-01
-**Status:** Accepted
-**Context:** Financial calculations in JavaScript/TypeScript with floating-point can produce rounding errors (e.g., $0.1 + $0.2 ≠ $0.3).
-**Decision:** All monetary values stored and calculated as integer cents (e.g., $245.00 = 24500). Display layer formats to currency string.
-**Consequences:** All endpoints return `*Cents` fields (e.g., `totalCents`). Math uses integer arithmetic only. Stripe amounts already use cents — no conversion needed.
-
----
-
-## ADR-002: orgId Always From JWT
-**Date:** 2025-04-01
-**Status:** Accepted
-**Context:** Multi-tenant isolation requires that users can only access their organization's data. Trusting client-supplied orgId allows tenant impersonation.
-**Decision:** orgId is extracted exclusively from the JWT claims by `@CurrentUser()` decorator. DTOs and query params must never accept orgId.
-**Consequences:** Guards must be applied on all protected routes. No exceptions. Enforced in rex-security audit.
+## [date] [decision title]
+**Module(s):** [list]
+**Decision:** [one-sentence summary]
+**Why:** [rationale, 1-2 sentences]
 ```
+
+This is for decisions that survive within one module's lifecycle. Cross-module commitments belong in an ADR.
 
 ---
 
@@ -237,7 +232,7 @@ Significant architectural decisions → `./agents/DECISIONS.md`
 
 📋 Changelog: [UPDATED / NEEDS UPDATE]
 
-🏗️ ADRs added this session: [N]
+📝 Decision log entries this session: [N]
 
 Verdict: DOCUMENTATION COMPLETE | PARTIAL | INCOMPLETE
 ```
@@ -251,5 +246,5 @@ Verdict: DOCUMENTATION COMPLETE | PARTIAL | INCOMPLETE
 3. Changelog entries go newest-first. Never reorder existing entries.
 4. `.env.example` never contains real credentials — ever.
 5. If a module's API changes, the changelog is updated in the same session, not deferred.
-6. ADRs are written when a non-obvious decision is made — especially trade-offs or constraints.
+6. Decision log entries are written when a non-obvious within-module choice is made. Cross-module decisions (multi-module impact, auth, payments, multi-tenant, schema, external integration) are escalated to rex-architect for an ADR — never written here.
 7. Swagger examples must use realistic-looking test data, not `"string"` or `0`.

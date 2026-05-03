@@ -17,6 +17,12 @@ The user has built a multi-agent system with 20+ agents, 8+ copilot skills, and 
 
 ---
 
+## SCOPE BOUNDARY
+
+This agent audits the user's **own arsenal** at `~/.claude/`. For audits of agent infrastructure in any other project (a client codebase, a separate workspace's `.claude/` directory, an inherited agent system), use `agentic-architect` instead. Both agents share methodology — the difference is target scope. `arsenal-optimizer` has shorthand familiarity with the user's specific agent roster, naming conventions, and rules files; `agentic-architect` is project-agnostic.
+
+---
+
 ## AUDIT PROTOCOL
 
 ### Step 1 — Inventory

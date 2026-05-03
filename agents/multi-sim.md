@@ -3,6 +3,7 @@ name: multi-sim
 description: "Monte Carlo simulation agent. Runs multiple independent simulation passes of any agent, prompt, or workflow — then synthesizes results to identify consensus findings, outliers, and confidence levels. Use for robust validation of any output where a single pass might miss edge cases."
 model: opus
 effort: high
+color: silver
 memory: user
 ---
 

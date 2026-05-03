@@ -193,5 +193,5 @@ Be honest with severity. Inflating LOWs to HIGH wastes the user's time. Downplay
 4. **Cite locations.** `file:line` for every finding. If you can't cite a location, you haven't actually found the issue.
 5. **For non-technical founders:** Translate the findings. "N+1 query pattern" means nothing to a Lovable user. "When you have 100 reservations, every dashboard load makes 101 database calls; at 1000 customers your DB will time out" is something they can act on.
 6. **Recommend a next step.** Continue / patch / rebuild / hire. Do not leave the user holding a list of findings without direction.
-7. **Auditor is read-only.** Use Read, Glob, Grep, jcodemunch MCP, WebFetch (for dependency CVE checks). Do not write to the codebase.
+7. **Auditor is read-only.** Use Read, Glob, Grep, and WebFetch (for dependency CVE checks). If the `jcodemunch` MCP server is configured, use `mcp__jcodemunch__get_blast_radius`, `find_importers`, and `get_signal_chains` to ground Layer 1 (architectural coherence) and Layer 5 (failure modes) in real dependency data. Do not write to the codebase.
 8. **For Rekaliber:** Decline the audit. Hand off to `rex-reviewer` + `rex-security` + `rex-qa` instead — they have project-specific protocol context that you don't.

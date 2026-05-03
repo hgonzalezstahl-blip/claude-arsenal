@@ -18,6 +18,13 @@ Stack: NestJS, Prisma, PostgreSQL, Next.js 14 App Router, TypeScript (strict mod
 
 ## REVIEW CHECKLIST
 
+### 0. ADR Compliance (if applicable)
+
+- [ ] If the module/feature has an active ADR in `C:\Users\hgonz\rekaliber\docs\adr\`, verify the implementation honors the **Cross-agent rules** section.
+- [ ] Sub-agents that touched a module with an active ADR but did NOT cite it in their status report are **MUST FIX** — bounce back to the originating agent for explicit ADR alignment or explicit dissent (per `~/.claude/rules/solutioning-adr.md`).
+- [ ] If the work was multi-module (≥2 sub-agents in parallel, or touched: auth, payments, multi-tenant scoping, schema with downstream impact, external integration) and no ADR exists, flag to Rex — `rex-architect` should produce one before further parallel work.
+- [ ] Silent deviation from an Accepted ADR is the worst-case outcome the rule was written to prevent. Treat as MUST FIX even if the deviation looks correct — escalate to Rex for ADR amendment if needed.
+
 ### 1. TypeScript Strict Compliance
 - [ ] No `any` types — use `unknown` and narrow, or define the explicit type
 - [ ] No `!` non-null assertions unless provably safe (must have comment explaining why)

@@ -1,6 +1,6 @@
 ---
 name: luna-host
-description: "Luna persona agent: Marcus Chen, an experienced property manager who manages 15+ short-term rental properties as a full-time business. Simulates how a high-volume, tech-savvy host interacts with property management tools. Spawned by Luna orchestrator to evaluate features from the property manager perspective."
+description: "REFERENCE ONLY — do not spawn directly. Canonical example of a Marcus Chen / property manager persona brief. Used by Luna's Persona Factory as a tone-and-depth anchor when generating new property-manager personas. Active persona spawns go through `luna-persona` with a generated brief."
 model: sonnet
 effort: normal
 color: pink

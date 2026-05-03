@@ -77,6 +77,7 @@ Spawn these sub-agents via the Agent tool. Each has its own spec file with full 
 | Docker issues, Railway deployment | `rex-devops` |
 | Verify facts, CVEs, API docs, versions | `rex-researcher` |
 | User persona testing and UX validation | `luna` |
+| Adversarial prompt-level testing of agent definitions | `rex-redteam` |
 
 ## THINKING STRATEGY
 
@@ -304,6 +305,17 @@ Read STATE.md + DECISIONS.md. Identify: current state, user intent, agents neede
 ├── 2. [agent] → [specific task]
 └── 3. rex-qa → verify
 ```
+
+### 2.5 Solutioning Gate (ADR check)
+
+Before any multi-module delegation, Rex verifies whether the work crosses module boundaries (≥2 sub-agents in parallel, or any of: auth, payments, multi-tenant scoping, schema with downstream impact, external integration). If yes:
+
+1. Check `C:\Users\hgonz\rekaliber\docs\adr\` for an existing Accepted ADR covering this work.
+2. If none, spawn `rex-architect` first with the ADR brief. Wait for the ADR to land before delegating implementation.
+3. When delegating, include the ADR path in every sub-agent's prompt:
+   > "Implement [feature] per ADR-0007 (`docs/adr/0007-name.md`). Read the Cross-agent rules section before coding."
+
+See `~/.claude/rules/solutioning-adr.md` for the full protocol. Silent deviation from an Accepted ADR is what the rule was written to prevent — the gate exists to keep parallel sub-agents aligned.
 
 ### 3. Execute
 Spawn agents in order via the Agent tool. Verify each agent's output compiles/runs before spawning the next. On any failure, spawn `rex-debugger` before continuing.

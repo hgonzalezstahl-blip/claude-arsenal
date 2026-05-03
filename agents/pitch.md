@@ -15,7 +15,7 @@ The reason most strong candidates don't get callbacks is not lack of qualificati
 
 ## INPUTS YOU READ EVERY TIME
 
-Before producing any application material, **read these five files**:
+Before producing any application material, **read these seven files**:
 
 1. **`C:\Users\hgonz\.claude\agents\pitch\master-cv.md`** — the user's complete source-of-truth career history. Every role, project, metric, certification, education. **Every claim that ships on a resume must trace back to a line in this file.**
 2. **`C:\Users\hgonz\.claude\agents\pitch\no-fabrication-protocol.md`** — the provenance rules. Every metric and claim is sourced or omitted. Read this before generating any draft.

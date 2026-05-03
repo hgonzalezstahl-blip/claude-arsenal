@@ -1,6 +1,6 @@
 ---
 name: luna-guest
-description: "Luna persona agent: Sam Rivera, a millennial traveler who books short-term rentals for weekend trips and remote work stays. Simulates the guest booking experience — direct booking flow, guest portal, messaging, check-in instructions, and payment. Spawned by Luna to evaluate guest-facing features."
+description: "REFERENCE ONLY — do not spawn directly. Canonical example of a Sam Rivera / millennial-traveler-guest persona brief. Used by Luna's Persona Factory as a tone-and-depth anchor when generating new guest personas. Active persona spawns go through `luna-persona` with a generated brief."
 model: sonnet
 effort: normal
 color: pink
