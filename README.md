@@ -157,6 +157,13 @@ Working-directory match wins over phrasing: anything inside `~/rekaliber` routes
 
 ## What's New
 
+### v5.0.3 — May 3, 2026 (Filename Normalization + Permissions Pruning)
+
+| Change | Details |
+|:-------|:--------|
+| **`TaskMaster.agent.md` renamed to `taskmaster.md`** | Last non-conforming agent filename in the directory. Now matches the lowercase / no-infix convention every other agent follows. The frontmatter `name: TaskMaster` is preserved, so all CLAUDE.md routing references continue to work — the rename is loader-transparent. |
+| **`settings.local.json` pruned** | 275 entries → 86. Removed: ~190 one-shot scaffold entries (e.g., specific `npx create-next-app ...` commands, project-specific `find` invocations, completed `mkdir` setups), malformed entries (`Bash(2)`, `Bash(do cp:*)`, `Bash(done)`, `Bash(for skill:*)`), and the `Bash(rm -rf apps/docs apps/web)` entry the audit flagged as a latent risk. Kept: broad wildcards (`Bash(npm:*)`, `Bash(git:*)`, `Bash(vercel:*)`, `Bash(qmd:*)`, etc.) that consolidate dozens of subcommand-specific entries; all configured MCP permissions; trusted WebFetch domains. Net result: same operational coverage, ~70% smaller surface for accidental matches. |
+
 ### v5.0.2 — May 3, 2026 (Coordination Drift Cleanup)
 
 | Change | Details |
