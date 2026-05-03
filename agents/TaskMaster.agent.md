@@ -1,6 +1,9 @@
 ---
 name: TaskMaster
 description: "Use when: user requests big changes, architectural decisions, major refactors, new features, redesigns, implementations, or planning. Orchestrates discovery → design → self-critique → final plan workflow with parallelized sub-agents."
+model: opus
+effort: high
+color: cyan
 memory: user
 ---
 

@@ -157,6 +157,16 @@ Working-directory match wins over phrasing: anything inside `~/rekaliber` routes
 
 ## What's New
 
+### v5.0.1 — May 3, 2026 (Configuration Hotfixes)
+
+| Change | Details |
+|:-------|:--------|
+| **`TaskMaster.agent.md` frontmatter** | Added missing `model: opus`, `effort: high`, `color: cyan`. Was previously loading at default tier — every other orchestrator (Rex, Luna, Spark, Vault, Auditor, Scout) declares opus + high explicitly. Now consistent. |
+| **`CLAUDE.md` knowledge pointer** | Replaced stale `knowledge-rag MCP server` reference with the actual server name `qmd MCP server (local markdown index)`. The `knowledge-rag` server was never wired up; `qmd` is what the RAG layer has been running on since v3. |
+| **`CLAUDE.md` Shogun launch commands** | Replaced `[your-wsl-user]` placeholders with `hgonz` (lines 137–138). Commands were previously copy-paste-broken if anyone ran them verbatim. |
+| **`CLAUDE.md` Shogun repo URL** | Replaced `[your-username]` placeholder with `hgonzalezstahl-blip` (line 136). Now points at the actual fork at `github.com/hgonzalezstahl-blip/multi-agent-shogun`. |
+| **Open: `TaskMaster.agent.md` filename** | Uses `.agent.md` infix and CamelCase while every other agent uses `lowercase-name.md`. Pending: full audit will check whether rename is safe (no broken references). |
+
 ### v5 — April 27, 2026 (Systems-Thinking Layer + BMAD-Inspired Discipline)
 
 | Change | Details |

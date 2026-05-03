@@ -133,9 +133,9 @@ These skills enforce systems-thinking discipline across all projects. Auto-invok
 - Production deployments
 - Small focused tasks (subagents within Claude Code are sufficient)
 
-**Repo:** `https://github.com/[your-username]/multi-agent-shogun` (upstream: `yohey-w/multi-agent-shogun`)
-**Launch:** `wsl -d Ubuntu -u [your-wsl-user] -- bash -lc 'cd ~/multi-agent-shogun && ./shutsujin_departure.sh'`
-**Connect:** `wsl -d Ubuntu -u [your-wsl-user] -- bash -lc 'tmux attach -t shogun'`
+**Repo:** `https://github.com/hgonzalezstahl-blip/multi-agent-shogun` (upstream: `yohey-w/multi-agent-shogun`)
+**Launch:** `wsl -d Ubuntu -u hgonz -- bash -lc 'cd ~/multi-agent-shogun && ./shutsujin_departure.sh'`
+**Connect:** `wsl -d Ubuntu -u hgonz -- bash -lc 'tmux attach -t shogun'`
 
 ---
 
@@ -150,7 +150,7 @@ These skills enforce systems-thinking discipline across all projects. Auto-invok
 - Prisma conventions: auto-loaded via `~/.claude/rules/prisma-database.md`
 - DOCX generation rules: auto-loaded via `~/.claude/rules/docx-generation.md` (Echo, Pitch, any agent producing Word documents)
 - Solutioning / ADR contract: auto-loaded via `~/.claude/rules/solutioning-adr.md` (all rex sub-agents read this before generating code on multi-module work)
-- Deep reference docs: search via knowledge-rag MCP server
+- Deep reference docs: search via qmd MCP server (local markdown index)
 
 ---
 
